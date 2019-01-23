@@ -13,99 +13,104 @@ FpsManager::~FpsManager()
 
 void FpsManager::controlFps()
 {
-	if (mCount == 0){
-		mStartTime = GetNowCount();
-	}
-	if (mCount == FPS){
-		mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
-		mStartTime = GetNowCount();
-		mCount = 0;
-	}
-	mCount++;
+    if (mCount == 0)
+    {
+        mStartTime = GetNowCount();
+    }
 
-	ScreenFlip();
+    if (mCount == FPS)
+    {
+        mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
+        mStartTime = GetNowCount();
+        mCount = 0;
+    }
 
-	t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
-
-	WaitTimer(t);
+    mCount++;
+    ScreenFlip();
+    t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
+    WaitTimer(t);
 }
 
 void FpsManager::controlWaitFps()
 {
-	if (mCount == 0){
-		mStartTime = GetNowCount();
-	}
-	if (mCount == FPS){
-		mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
-		mStartTime = GetNowCount();
-		mCount = 0;
-	}
-	mCount++;
+    if (mCount == 0)
+    {
+        mStartTime = GetNowCount();
+    }
 
-	t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
+    if (mCount == FPS)
+    {
+        mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
+        mStartTime = GetNowCount();
+        mCount = 0;
+    }
 
-	WaitTimer(t);
+    mCount++;
+    t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
+    WaitTimer(t);
 }
 
 void FpsManager::controlClearDrawScreenFps()
 {
-	if (mCount == 0){
-		mStartTime = GetNowCount();
-	}
-	if (mCount == FPS){
-		mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
-		mStartTime = GetNowCount();
-		mCount = 0;
-	}
-	mCount++;
+    if (mCount == 0)
+    {
+        mStartTime = GetNowCount();
+    }
 
-	ScreenFlip();
+    if (mCount == FPS)
+    {
+        mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
+        mStartTime = GetNowCount();
+        mCount = 0;
+    }
 
-	ClearDrawScreen();
-
-	t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
-
-	WaitTimer(t);
+    mCount++;
+    ScreenFlip();
+    ClearDrawScreen();
+    t = mCount * 1000 / FPS - (GetNowCount() - mStartTime);
+    WaitTimer(t);
 }
 
 void FpsManager::measureFps()
 {
-	if (mCount == 0) {
-		mStartTime = GetNowCount();
-	}
-	if (mCount == FPS) {
-		mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
-		mStartTime = GetNowCount();
-		mCount = 0;
-	}
-	mCount++;
+    if (mCount == 0)
+    {
+        mStartTime = GetNowCount();
+    }
 
-	ScreenFlip();
+    if (mCount == FPS)
+    {
+        mFps = 1000.f / ((GetNowCount() - mStartTime) / (float)FPS);
+        mStartTime = GetNowCount();
+        mCount = 0;
+    }
 
-	ClearDrawScreen();
+    mCount++;
+    ScreenFlip();
+    ClearDrawScreen();
 }
 
 int FpsManager::getWaitTime()
 {
-	return t;
+    return t;
 }
 
 void FpsManager::displayFps(int x, int y, int color)
 {
-	DrawFormatString(x, y, color, "%.f", mFps);
+    DrawFormatString(x, y, color, "%.f", mFps);
 }
 
 void FpsManager::setFps(int fps)
 {
-	FPS = fps;
+    FPS = fps;
 }
 
 float FpsManager::getNowFps()
 {
-	return mFps;
+    return mFps;
 }
 
 int FpsManager::getDefaultFps()
 {
-	return FPS;
+    return FPS;
 }

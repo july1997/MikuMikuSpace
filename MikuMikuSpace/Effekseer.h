@@ -36,26 +36,26 @@
 
 class Effekseer_DX
 {
-public:
-	Effekseer_DX();
-	~Effekseer_DX();
+    public:
+        Effekseer_DX();
+        ~Effekseer_DX();
 
-	void update();
+        void update();
 
-private:
-	size_t time=0;
-	int grHandle;
+    private:
+        size_t time = 0;
+        int grHandle;
 
-	const int MAX_INSTANCE_NUM = 2000;
+        const int MAX_INSTANCE_NUM = 2000;
 
-	ID3D11Device *g_device;
-	ID3D11DeviceContext *g_context;
+        ID3D11Device *g_device;
+        ID3D11DeviceContext *g_context;
 
-	Effekseer::Manager*			g_manager;
-	EffekseerRenderer::Renderer*	g_renderer ;
+        Effekseer::Manager*			g_manager;
+        EffekseerRenderer::Renderer*	g_renderer ;
 
-	Effekseer::Effect*				g_effect;
-	Effekseer::Handle				g_handle = -1;
+        Effekseer::Effect*				g_effect;
+        Effekseer::Handle				g_handle = -1;
 
 };
 

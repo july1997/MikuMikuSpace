@@ -8,16 +8,15 @@ using namespace std;
 
 int main()
 {
-	cout << MMOW_version << endl;
+    cout << MMOW_version << endl;
+    AccountManager manager;
+    manager.connection();
+    //別スレッドで実行
+    std::thread t([&manager]() { manager.connection(); });
 
-	AccountManager manager;
-	manager.connection();
-	//別スレッドで実行
-	std::thread t([&manager]() { manager.connection(); });
+    while (1)
+    {
+    }
 
-	while (1) {
-
-	}
-
-	return 0;
+    return 0;
 }

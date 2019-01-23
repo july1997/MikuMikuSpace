@@ -27,15 +27,15 @@
 //64bitのVSTのみ使用可能な模様(64bitビルド時)
 class VstHost
 {
-	//! オーディオ系定数
-	static size_t const SAMPLING_RATE = 44100;
-	static size_t const BLOCK_SIZE = 1024;
-	static size_t const BUFFER_MULTIPLICITY = 4;
+        //! オーディオ系定数
+        static size_t const SAMPLING_RATE = 44100;
+        static size_t const BLOCK_SIZE = 1024;
+        static size_t const BUFFER_MULTIPLICITY = 4;
 
-public:
-	VstHost();
-	~VstHost();
+    public:
+        VstHost();
+        ~VstHost();
 
-	void loadLibrary(std::string libraryName);
+        void loadLibrary(std::string libraryName);
 };
 

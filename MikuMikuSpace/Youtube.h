@@ -6,49 +6,49 @@
 
 class Youtube
 {
-public:
-	Youtube();
-	~Youtube();
+    public:
+        Youtube();
+        ~Youtube();
 
-	//URLから動画をダウンロードして再生する　戻り値:0　終了
-	size_t downloadmovie(std::string VideoURL);
+        //URLから動画をダウンロードして再生する　戻り値:0　終了
+        size_t downloadmovie(std::string VideoURL);
 
-	//再生を開始
-	void playMovie();
+        //再生を開始
+        void playMovie();
 
-	//画面の更新
-	void update();
+        //画面の更新
+        void update();
 
-	//再生を一時停止、再開する
-	void pause();
+        //再生を一時停止、再開する
+        void pause();
 
-	//再生位置を変更する
-	void seek(int time);
-	
-	//再生位置を得る
-	int getSeek();
+        //再生位置を変更する
+        void seek(int time);
 
-	//yotude-dlの更新
-	bool upgrade();
+        //再生位置を得る
+        int getSeek();
 
-private:
+        //yotude-dlの更新
+        bool upgrade();
 
-	int screen_handel;
+    private:
 
-	size_t downloadmovieflag = 3;
-	size_t timer = 0;
-	bool deleteCacheflag = 0, upgradeflag = 0;
-	struct stat buf;
+        int screen_handel;
 
-	void deleteProcess();
-	bool deleteCache();
+        size_t downloadmovieflag = 3;
+        size_t timer = 0;
+        bool deleteCacheflag = 0, upgradeflag = 0;
+        struct stat buf;
 
-	std::string exe;
-	std::string path;
+        void deleteProcess();
+        bool deleteCache();
 
-	void yotube_dl(const char *exe, const char *word);
+        std::string exe;
+        std::string path;
 
-	DWORD dwD;
-	HANDLE hHandle;
+        void yotube_dl(const char *exe, const char *word);
+
+        DWORD dwD;
+        HANDLE hHandle;
 };
 

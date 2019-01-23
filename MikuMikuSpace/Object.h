@@ -5,56 +5,56 @@
 
 
 #include <vector>
-#include <memory> 
+#include <memory>
 
 //物理演算しないためにはModel.hをお使いください
 class Object : public Model
 {
-protected:
+    protected:
 
-	Bullet_physics *bullet;
-	int world;
-	std::vector<VECTOR> forms;
-	std::vector<int> bodyhandel;
+        Bullet_physics *bullet;
+        int world;
+        std::vector<VECTOR> forms;
+        std::vector<int> bodyhandel;
 
-	size_t objects = 0;
+        size_t objects = 0;
 
-	std::vector<std::shared_ptr<Model>> models;
+        std::vector<std::shared_ptr<Model>> models;
 
-	VECTOR testingpos = VGet(0,0,0), testingrot = VGet(0,0,0);
+        VECTOR testingpos = VGet(0, 0, 0), testingrot = VGet(0, 0, 0);
 
-public:
-	Object(Bullet_physics *_bullet, int _world);
+    public:
+        Object(Bullet_physics *_bullet, int _world);
 
-	//モデルのメッシュから剛体を作成
-	size_t loadModel(const char *FileName, float scale);
+        //モデルのメッシュから剛体を作成
+        size_t loadModel(const char *FileName, float scale);
 
-	size_t loadModel(const char *FileName, VECTOR Form, float scale);
+        size_t loadModel(const char *FileName, VECTOR Form, float scale);
 
-	size_t deleteModel(int object);
+        size_t deleteModel(int object);
 
-	size_t copyModel(int object, float scale = 1.0f);
+        size_t copyModel(int object, float scale = 1.0f);
 
-	int setPos(int object, VECTOR pos);
+        int setPos(int object, VECTOR pos);
 
-	int setRot(int object, VECTOR rot);
+        int setRot(int object, VECTOR rot);
 
-	int setScale(int object, float scale, float mass = 1);
+        int setScale(int object, float scale, float mass = 1);
 
-	virtual int getModelHandle(int object);
+        virtual int getModelHandle(int object);
 
-	VECTOR getPos(int object);
+        VECTOR getPos(int object);
 
-	VECTOR getRot(int object);
-	
-	//オブジェクトの位置をキーボードで移動できるようにします
-	void testingPositioning(int object);
+        VECTOR getRot(int object);
 
-	//全モデルの位置を更新
-	void update();
+        //オブジェクトの位置をキーボードで移動できるようにします
+        void testingPositioning(int object);
 
-	//モデルを全て描画
-	virtual void draw();
+        //全モデルの位置を更新
+        void update();
+
+        //モデルを全て描画
+        virtual void draw();
 };
 
 /*

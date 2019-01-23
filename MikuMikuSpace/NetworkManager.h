@@ -13,67 +13,67 @@
 
 class NetworkManager
 {
-public:
-	NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_);
-	~NetworkManager();
+    public:
+        NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_);
+        ~NetworkManager();
 
-	bool connect();
-	bool login(std::string mail, std::string pass);
-	bool signUp(std::string mail, std::string pass, std::string nane);
+        bool connect();
+        bool login(std::string mail, std::string pass);
+        bool signUp(std::string mail, std::string pass, std::string nane);
 
-	bool CorrectVersion = 1;
+        bool CorrectVersion = 1;
 
-	int getid();
-	string getname();
+        int getid();
+        string getname();
 
-	void startSend();
+        void startSend();
 
-	string oldState = "";
-	bool sendDir = 0;
+        string oldState = "";
+        bool sendDir = 0;
 
-	size_t getChatMassegeSize();
-	std::string getChatMassege();
+        size_t getChatMassegeSize();
+        std::string getChatMassege();
 
-	void multiplayerDraw();
-	void multiplayerUpdate();
+        void multiplayerDraw();
+        void multiplayerUpdate();
 
-	bool startCommunication();
+        bool startCommunication();
 
-	size_t getMultiplayerSize();
+        size_t getMultiplayerSize();
 
-	std::shared_ptr<Character> cahara;
-	MultiPlayers *players;
+        std::shared_ptr<Character> cahara;
+        MultiPlayers *players;
 
-	int sendChat(string str);
+        int sendChat(string str);
 
-	void uploadModel(string filepath);
+        void uploadModel(string filepath);
 
-	void downloadModel(int model_id);
+        void downloadModel(int model_id);
 
-	int ping = 0, ping_show = 0;
-	void displayPing(int x, int y, int color);
+        int ping = 0, ping_show = 0;
+        void displayPing(int x, int y, int color);
 
-	string getServerDetail();
-private:
+        string getServerDetail();
+    private:
 
-	std::string coneection = std::string(MMOW_Server);
-	
-	int cpt = 0;
-	vector<string> chatmessege;
+        std::string coneection = std::string(MMOW_Server);
 
-	Network network;
+        int cpt = 0;
+        vector<string> chatmessege;
 
-	std::thread t;
-	std::thread t2;
+        Network network;
 
-	void setCorrect(bool c);
+        std::thread t;
+        std::thread t2;
 
-	void update();
+        void setCorrect(bool c);
 
-	void sendLoop();
+        void update();
 
-	std::vector<std::string> chat;
-	
-	string access_key;
+        void sendLoop();
+
+        std::vector<std::string> chat;
+
+        string access_key;
 };
 

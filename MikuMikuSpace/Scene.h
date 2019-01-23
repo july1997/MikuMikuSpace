@@ -12,51 +12,51 @@
 
 class Scene
 {
-public:
-	Scene(std::shared_ptr<NetworkManager> network_);
-	~Scene();
+    public:
+        Scene(std::shared_ptr<NetworkManager> network_);
+        ~Scene();
 
-	bool login();
+        bool login();
 
-	bool chat();
+        bool chat();
 
-	void drawName();
+        void drawName();
 
-	void tutorial();
+        void tutorial();
 
-	void loading();
+        void loading();
 
-	bool update();
+        bool update();
 
-	void upload();
-	void download();
-private:
+        void upload();
+        void download();
+    private:
 
-	bool connect();
+        bool connect();
 
-	int regist(std::string mail, std::string pass);
+        int regist(std::string mail, std::string pass);
 
-	bool illegalChara(std::string str);
-	bool Specialsymbol(std::string str);
-	bool Invalidname(std::string str);
+        bool illegalChara(std::string str);
+        bool Specialsymbol(std::string str);
+        bool Invalidname(std::string str);
 
-	UI ui;
-	int font, font2, font3;
+        UI ui;
+        int font, font2, font3;
 
-	FpsManager fps;
+        FpsManager fps;
 
-	std::shared_ptr<NetworkManager> network;
+        std::shared_ptr<NetworkManager> network;
 
-	std::vector<std::string> chatmessege;
-	int chatbox, chatinputbox, sousin;
-	bool load = 0, inp = 0,  follow = 0;
-	string messe;
+        std::vector<std::string> chatmessege;
+        int chatbox, chatinputbox, sousin;
+        bool load = 0, inp = 0,  follow = 0;
+        string messe;
 
-	bool tutorialf = 0, tutoriall = 0;
-	int tutorialbox;
+        bool tutorialf = 0, tutoriall = 0;
+        int tutorialbox;
 
-	bool step = 0;
+        bool step = 0;
 
-	Updater updater;
+        Updater updater;
 };
 

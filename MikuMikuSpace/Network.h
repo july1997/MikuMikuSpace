@@ -27,76 +27,76 @@ using namespace std;
 
 class Network
 {
-	int nethandle;
-	int receiveLoop();
+        int nethandle;
+        int receiveLoop();
 
-	std::thread t;
-	std::vector<std::string> message;
+        std::thread t;
+        std::vector<std::string> message;
 
-	int netudphandle, recivenetudphandle;
-	IPDATA UDPIP;
+        int netudphandle, recivenetudphandle;
+        IPDATA UDPIP;
 
-	int UDP_receiveLoop();
-	std::thread u;
-	std::vector<std::string> command;
+        int UDP_receiveLoop();
+        std::thread u;
+        std::vector<std::string> command;
 
-	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption enc; //aes
-	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption dec;
-	CryptoPP::RSA::PublicKey pubkey; //ras
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption enc; //aes
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption dec;
+        CryptoPP::RSA::PublicKey pubkey; //ras
 
-	std::string common_key_;
-	std::string common_key_iv_;
+        std::string common_key_;
+        std::string common_key_iv_;
 
-	string name;
-	int id;
+        string name;
+        int id;
 
-public:
-	Network();
-	~Network();
+    public:
+        Network();
+        ~Network();
 
-	void setid(int id_);
-	void setname(string name_);
-	int getid();
-	string getname();
+        void setid(int id_);
+        void setname(string name_);
+        int getid();
+        string getname();
 
-	//--TCP--
-	int connect(std::string Ip);
+        //--TCP--
+        int connect(std::string Ip);
 
-	int send(char command, std::string method, std::string str, bool changeUTF8 = 1, bool base64encode = 1, bool useRSA = 0, bool useAES = 0);
+        int send(char command, std::string method, std::string str, bool changeUTF8 = 1, bool base64encode = 1, bool useRSA = 0, bool useAES = 0);
 
-	int receive_start();
+        int receive_start();
 
-	size_t getMassegeSize();
-	std::string getMassege();
+        size_t getMassegeSize();
+        std::string getMassege();
 
-	//--UDP--
-	int makeUDPSocket(std::string Ip);
+        //--UDP--
+        int makeUDPSocket(std::string Ip);
 
-	void sendUDP(char command, std::string method, string Buffer, bool base64encode = 1, bool useAES = 1);
+        void sendUDP(char command, std::string method, string Buffer, bool base64encode = 1, bool useAES = 1);
 
-	int UDP_receive_start();
+        int UDP_receive_start();
 
-	size_t getCommandSize();
-	std::string getCommand();
+        size_t getCommandSize();
+        std::string getCommand();
 
-	//暗号化
-	int getRsaPublicKey(std::string publicKeystr);
-	std::string encryptByRsa(std::string str);
+        //暗号化
+        int getRsaPublicKey(std::string publicKeystr);
+        std::string encryptByRsa(std::string str);
 
-	int makeAESKey();
-	void decryptionByAes(std::string &str);
-	void encryptByAes(std::string &str);
+        int makeAESKey();
+        void decryptionByAes(std::string &str);
+        void encryptByAes(std::string &str);
 
-	std::string SHA256(string str);
+        std::string SHA256(string str);
 
-	//署名と同時にバージョン確認
-	bool signature(string str);
+        //署名と同時にバージョン確認
+        bool signature(string str);
 
-	//--変換系--
-	std::string convertShiftJIS(const std::string srcUTF8);
-	std::string convertUTF8(std::string srcShiftJIS);
+        //--変換系--
+        std::string convertShiftJIS(const std::string srcUTF8);
+        std::string convertUTF8(std::string srcShiftJIS);
 
-	//--コマンド(1byte)--
-	unsigned const char comment = 1;
+        //--コマンド(1byte)--
+        unsigned const char comment = 1;
 };
 

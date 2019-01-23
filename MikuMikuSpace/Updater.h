@@ -15,21 +15,21 @@
 
 class Updater
 {
-	WebDownloader* dl;
+        WebDownloader* dl;
 
-	DWORD dwD;
-	HANDLE hHandle;
+        DWORD dwD;
+        HANDLE hHandle;
 
-public:
-	Updater();
-	~Updater();
+    public:
+        Updater();
+        ~Updater();
 
-	std::string downloadRelese();
-	int checkUpdate(std::string relese);
+        std::string downloadRelese();
+        int checkUpdate(std::string relese);
 
-	int getDownloadSize();
-	int getReadSize();
+        int getDownloadSize();
+        int getReadSize();
 
-	void lunchUpdater();
+        void lunchUpdater();
 };
 
