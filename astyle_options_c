@@ -1,0 +1,28 @@
+mode=c
+
+# Allman スタイル
+style=allman
+
+# インデント
+indent=spaces=4
+indent-namespaces
+indent-classes
+indent-switches
+indent-cases
+indent-col1-comments
+min-conditional-indent=0
+
+# スペース
+pad-header
+pad-oper
+pad-comma
+unpad-paren
+
+# ブラケット
+add-brackets
+keep-one-line-blocks
+break-blocks
+delete-empty-lines
+
+# 改行コード
+lineend=linux
