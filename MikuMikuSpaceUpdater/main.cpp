@@ -207,10 +207,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     std::string url = "/" + json["releases"]["hash"].string_value();
     std::string relesenote = json["releases"]["note"].string_value();
     WebDownloader* dl = new WebDownloader();
-    dl->httpsOpen(MMOW_Server);
+    dl->httpsOpen(MMS_Server);
     int r = dl->httpGET(
                 (char *)url.c_str(),
-                (char *)MMOW_Server,
+                (char *)MMS_Server,
                 (char *)"./", //.exeと同じディレクトリなら「"./"」
                 (char *)"Update.zip"                     //拡張子も必要なので注意
             );

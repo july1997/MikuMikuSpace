@@ -80,7 +80,7 @@ bool Scene::login()
         }
 
         ui.drawBackgroundImage();
-        ui.drawString(font3, MMOW_version, 0, 0, 0, GetColor(238, 238, 238));
+        ui.drawString(font3, MMS_version, 0, 0, 0, GetColor(238, 238, 238));
         ui.drawString(font2, u8"ログイン", 650, 200, 1);
         ui.updateBox(box);
         ui.updateSize(box, 400, 150, GetColor(145, 145, 145), 13882323, 36);

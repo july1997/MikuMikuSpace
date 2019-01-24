@@ -56,7 +56,7 @@ class NetworkManager
         string getServerDetail();
     private:
 
-        std::string coneection = std::string(MMOW_Server);
+        std::string coneection = std::string(MMS_Server);
 
         int cpt = 0;
         vector<string> chatmessege;

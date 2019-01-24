@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    cout << MMOW_version << endl;
+    cout << MMS_version << endl;
     AccountManager manager;
     manager.connection();
     //別スレッドで実行

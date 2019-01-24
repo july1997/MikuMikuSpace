@@ -256,7 +256,7 @@ void Account::signature()
         CryptoPP::AutoSeededRandomPool rng;
         string signature;
         CryptoPP::RSASS<CryptoPP::PSS, CryptoPP::SHA1>::Signer signer(privateKey);
-        CryptoPP::StringSource ss1(MMOW_version, true,
+        CryptoPP::StringSource ss1(MMS_version, true,
                                    new CryptoPP::SignerFilter(rng, signer,
                                            new CryptoPP::StringSink(signature)
                                                              ) // SignerFilter

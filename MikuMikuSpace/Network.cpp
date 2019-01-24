@@ -274,7 +274,7 @@ bool Network::signature(string str)
         string recovered;
         // Verify and Recover
         CryptoPP::RSASS<CryptoPP::PSS, CryptoPP::SHA1>::Verifier verifier(pubkey);
-        CryptoPP::StringSource ss2(MMOW_version + str, true,
+        CryptoPP::StringSource ss2(MMS_version + str, true,
                                    new CryptoPP::SignatureVerificationFilter(
                                        verifier,
                                        new CryptoPP::StringSink(recovered),
@@ -283,7 +283,7 @@ bool Network::signature(string str)
                                    ) // SignatureVerificationFilter
                                   ); // StringSource
 
-        if (recovered == MMOW_version) { return 1; }
+        if (recovered == MMS_version) { return 1; }
         else { return 0; }
     }
     catch (...)
