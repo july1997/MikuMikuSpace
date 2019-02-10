@@ -21,12 +21,16 @@ using namespace std;
 class dataBase
 {
         sql::Driver *driver;
+        std::shared_ptr<sql::Connection> con;
 
         bool illegalChara(std::string str);
 
         vector<char> seed;
         string createRandomString(int size);
         std::mt19937 mt;
+
+        std::shared_ptr<sql::ResultSet> query(std::string query);
+        int update(std::string query);
 
     public:
         dataBase();
@@ -39,4 +43,6 @@ class dataBase
         int regstModel(int user_id, string model_name, string model_file_name, int model_type);
 
         string createAccessKey(int model_id);
+
+        string getModelData(int user_id);
 };

@@ -3,6 +3,8 @@
 dataBase::dataBase()
 {
     driver = get_driver_instance();
+    con = std::shared_ptr<sql::Connection>(driver->connect(HOST, USER, PASSWORD));
+    con->setSchema(DATABASE);
 
     //乱数シードの初期化
     for (char c = 'a'; c <= 'z'; c++)
@@ -28,101 +30,16 @@ dataBase::~dataBase()
 {
 }
 
-bool dataBase::login(string mail, string pass, int *id, string *name)
+string dataBase::createRandomString(int size)
 {
-    if (illegalChara(mail) && illegalChara(pass))
+    string sb;
+
+    for (int i = 0; i < size; i++)
     {
-        try
-        {
-            sql::Connection *con;
-            con = driver->connect(HOST, USER, PASSWORD);
-            con->setSchema(DATABASE);
-            sql::Statement *stmt;
-            sql::ResultSet *res;
-            stmt = con->createStatement();
-            res = stmt->executeQuery("SELECT * FROM user_data WHERE email='" + mail + "' AND password=SHA2(SHA2('" + pass + "', 256), 256)");
-            string name_;
-
-            while (res->next())
-            {
-                *id = res->getInt(1);
-                name_ = res->getString("name");
-            }
-
-            *name = name_;
-            //削除すると実行
-            delete res;
-            delete stmt;
-            delete con;
-            return 1;
-        }
-        catch (sql::SQLException &e)
-        {
-            cout << "# ERR: " << e.what();
-            return 0;
-        }
+        sb += seed[mt() % seed.size()];
     }
-    else
-    {
-        return 0;
-    }
-}
 
-bool dataBase::regst(string mail, string pass, string name, int *id)
-{
-    if (illegalChara(mail) && illegalChara(pass))
-    {
-        try
-        {
-            sql::Connection *con;
-            con = driver->connect(HOST, USER, PASSWORD);
-            con->setSchema(DATABASE);
-            sql::Statement *stmt;
-            sql::ResultSet *res;
-            stmt = con->createStatement();
-            res = stmt->executeQuery("SELECT * FROM user_data WHERE email='" + mail + "'");
-            int Existence = 0;
-
-            while (res->next())
-            {
-                Existence = res->getInt(1);
-            }
-
-            if (Existence == 0)
-            {
-                stmt = con->createStatement();
-                res = stmt->executeQuery("SELECT MAX(user_id) FROM user_data");
-                int lastid;
-
-                while (res->next())
-                {
-                    lastid = res->getInt(1);
-                }
-
-                *id = lastid + 1;
-                stmt = con->createStatement();
-                stmt->execute("INSERT INTO user_data VALUES(" + to_string(lastid + 1) + ", '" + mail + "', SHA2(SHA2('" + pass + "', 256), 256), '" + name + "')");
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-
-            //削除すると実行
-            delete res;
-            delete stmt;
-        }
-        catch (sql::SQLException &e)
-        {
-            cout << "# ERR: " << e.what();
-            return 0;
-        }
-    }
-    else
-    {
-        return 0;
-    }
+    return sb;
 }
 
 bool dataBase::illegalChara(std::string str)
@@ -143,17 +60,103 @@ bool dataBase::illegalChara(std::string str)
     return 1;
 }
 
+
+std::shared_ptr<sql::ResultSet> dataBase::query(std::string query)
+{
+    auto stmt = std::shared_ptr<sql::Statement>(con->createStatement());
+    auto res = std::shared_ptr<sql::ResultSet>(stmt->executeQuery(query));
+
+    return res;
+}
+
+int dataBase::update(std::string query)
+{
+    auto stmt = std::shared_ptr<sql::Statement>(con->createStatement());
+    stmt->execute(query);
+    return stmt->getUpdateCount();
+}
+
+bool dataBase::login(string mail, string pass, int *id, string *name)
+{
+    if (illegalChara(mail) && illegalChara(pass))
+    {
+        try
+        {
+            auto res = query("SELECT * FROM user_data WHERE email='" + mail + "' AND password=SHA2(SHA2('" + pass + "', 256), 256)");
+            res->next();
+
+            if(res->rowsCount() != 0)
+            {
+                *id = res->getInt(1);
+                *name = res->getString("name");
+                return 1;
+            } 
+
+            return 0;
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "# ERR: " << e.what();
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+bool dataBase::regst(string mail, string pass, string name, int *id)
+{
+    if (illegalChara(mail) && illegalChara(pass))
+    {
+        try
+        {
+            auto res = query("SELECT * FROM user_data WHERE email='" + mail + "'");
+            int Existence = 0;
+
+            while (res->next())
+            {
+                Existence = res->getInt(1);
+            }
+
+            if (Existence == 0)
+            {
+                res = query("SELECT MAX(user_id) FROM user_data");
+                int lastid;
+
+                while (res->next())
+                {
+                    lastid = res->getInt(1);
+                }
+
+                *id = lastid + 1;
+                int count = update("INSERT INTO user_data VALUES(" + to_string(lastid + 1) + ", '" + mail + "', SHA2(SHA2('" + pass + "', 256), 256), '" + name + "')");
+                
+                return count == 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "# ERR: " << e.what();
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 int dataBase::regstModel(int user_id, string model_name, string model_file_name, int model_type)
 {
     try
     {
-        sql::Connection *con;
-        con = driver->connect(HOST, USER, PASSWORD);
-        con->setSchema(DATABASE);
-        sql::Statement *stmt;
-        sql::ResultSet *res;
-        stmt = con->createStatement();
-        res = stmt->executeQuery("SELECT MAX(model_id) FROM model_data");
+        auto res = query("SELECT MAX(model_id) FROM model_data");
         int lastmodelid;
 
         while (res->next())
@@ -161,14 +164,11 @@ int dataBase::regstModel(int user_id, string model_name, string model_file_name,
             lastmodelid = res->getInt(1);
         }
 
-        stmt = con->createStatement();
-        stmt->execute("INSERT INTO model_data VALUES(" + to_string(++lastmodelid) + "," + to_string(user_id) + ",'" +
+        int count = update("INSERT INTO model_data VALUES(" + to_string(++lastmodelid) + "," + to_string(user_id) + ",'" +
                       model_name + "','" + "" + "','" + model_file_name + "'," + to_string(model_type) + ")");
-        //削除すると実行
-        delete res;
-        delete stmt;
-        delete con;
-        return lastmodelid;
+
+        if(count != 0)return lastmodelid;
+        else return -1;
     }
     catch (sql::SQLException &e)
     {
@@ -181,28 +181,11 @@ string dataBase::createAccessKey(int model_id)
 {
     try
     {
-        sql::Connection *con;
-        con = driver->connect(HOST, USER, PASSWORD);
-        con->setSchema(DATABASE);
-        sql::Statement *stmt;
-        sql::ResultSet *res;
-        stmt = con->createStatement();
-        res = stmt->executeQuery("SELECT MAX(access_number) FROM access_key");
-        int accessNumber;
-
-        while (res->next())
-        {
-            accessNumber = res->getInt(1);
-        }
-
         string accesskey = createRandomString(10);
-        stmt = con->createStatement();
-        stmt->execute("INSERT INTO access_key VALUES('" + accesskey + "'" + "," + to_string(model_id) + "," + to_string(++accessNumber) + ")");
-        //削除すると実行
-        delete res;
-        delete stmt;
-        delete con;
-        return accesskey;
+        int count = update("INSERT INTO access_key VALUES( null,'" + accesskey + "'" + "," + to_string(model_id) + ")");
+     
+        if(count != 0)return accesskey;
+        else return "";
     }
     catch (sql::SQLException &e)
     {
@@ -211,14 +194,27 @@ string dataBase::createAccessKey(int model_id)
     }
 }
 
-string dataBase::createRandomString(int size)
+string dataBase::getModelData(int user_id)
 {
-    string sb;
-
-    for (int i = 0; i < size; i++)
+    try
     {
-        sb += seed[mt() % seed.size()];
-    }
+        auto res = query("SELECT * FROM model_data WHERE user_id = " + to_string(user_id));
+        std::string str = "";
 
-    return sb;
+        while (res->next())
+        {
+            str = res->getString("model_id") + " ";
+            //str += res->getString("model_name")+ " ";
+            //str += res->getString("model_file_pash")+ " ";
+            //str += res->getString("model_file_name")+ " ";
+            //str += res->getString("model_type");
+        }
+
+        return str;
+    }
+    catch (sql::SQLException &e)
+    {
+        cout << "# ERR: " << e.what();
+        return "";
+    }
 }
