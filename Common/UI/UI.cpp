@@ -593,7 +593,7 @@ void UI::drawStringToBox(int BoxHandel, std::string string, int InBoxX, int InBo
             //はみ出した文字を数える
             for (size_t i = 0; i < string.size(); i++)
             {
-                if (i % 2 == 0)
+                if (i % 3 == 0)
                 {
                     if (GetDrawFormatStringWidthToHandle(getFont(FontHandel), string.substr(i, string.size() - 1).c_str()) <= BoxXLength[BoxHandel] - WidthLimit)
                     {
@@ -620,7 +620,12 @@ int UI::makeInputBox(int XLength, int YLength, int color, int maxlengh, const ch
 
 void UI::activateInputBox(int InputBoxHandel)
 {
-    SetActiveKeyInput(InputHandle[InputBoxHandel]);
+    if (InputBoxHandel != -1)
+    {
+        SetActiveKeyInput(InputHandle[InputBoxHandel]);
+    }
+    else { SetActiveKeyInput(InputBoxHandel); }
+
     NowActiveKey = InputBoxHandel;
     NowActiveKeyI = InputBoxHandel;
 }
@@ -697,7 +702,7 @@ void UI::drawInputBoxToBox(int BoxHandel, int InputBoxHandel, int InBoxX, int In
                 int CursorDotPos;
                 GetDrawStringSizeToHandle(&CursorDotPos, NULL, NULL, String, CursorPos, getFont(FontHandel));
 
-                if (Asterisk) { CursorDotPos *= 1.75; }
+                if (Asterisk) { CursorDotPos = CursorPos * 18; }
 
                 // ＩＭＥ入力情報を取得する
                 const IMEINPUTDATA *ImeData = GetIMEInputData();

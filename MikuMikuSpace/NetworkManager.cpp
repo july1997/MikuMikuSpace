@@ -171,60 +171,60 @@ void NetworkManager::update()
                 {
                     try
                     {
-                        std::vector<unsigned int> usrid;
+                        vector<string> elems;
+                        string item;
 
-                        while (1)
+                        for (char ch : dstr)
                         {
-                            string userid = dstr.substr(0, dstr.find(" "));
-                            dstr.erase(0, userid.length() + 1);
-                            unsigned int uid = stoi(userid);
-                            usrid.push_back(uid);
-
-                            if (uid == 0)  //誰もいない
+                            if (ch == ' ')
                             {
-                                for (int j = 0; j < players->getMultiplayerSize(); j++)
+                                if (!item.empty())
                                 {
-                                    players->deletePlayer(players->getPlayerID(j));
+                                    elems.push_back(item);
                                 }
+
+                                item.clear();
                             }
                             else
                             {
+                                item += ch;
+                            }
+                        }
+
+                        if (!item.empty())
+                        {
+                            elems.push_back(item);
+                        }
+
+                        std::vector<unsigned int> usrid;
+
+                        if (elems[0] != "0")
+                        {
+                            for (int i = 0; i < elems.size() / 10; i++)
+                            {
+                                unsigned int uid = stoi(elems[i * 10]);
+                                usrid.push_back(uid);
+
                                 if (players->findPlayerID(uid) == -1)
                                 {
-                                    string name = dstr.substr(0, dstr.find(" "));
-                                    dstr.erase(0, name.length() + 1);
-                                    players->addPlayer(uid, name);
+                                    players->addPlayer(uid, elems[i * 10 + 1]);
                                     players->copyModel(uid, cahara->getModelHandle());
                                     players->setup(uid);
                                     players->addPlayerSize();
-                                    float t[7];
-
-                                    for (int i = 0; i < 7; i++)
-                                    {
-                                        t[i] = stod(dstr.substr(0, dstr.find(" ")));
-                                        dstr.erase(0, dstr.find(" ") + 1);
-                                    }
-
-                                    btVector3 bt = btVector3(t[0], t[1], t[2]);
-                                    btQuaternion bq = btQuaternion(t[3], t[4], t[5], t[6]);
+                                    btVector3 bt = btVector3(stod(elems[i * 10 + 2]), stod(elems[i * 10 + 3]), stod(elems[i * 10 + 4]));
+                                    btQuaternion bq = btQuaternion(stod(elems[i * 10 + 5]), stod(elems[i * 10 + 6]), stod(elems[i * 10 + 7]), stod(elems[i * 10 + 8]));
                                     players->setPosBullet(uid, bt, bq);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                }
-                                else
-                                {
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
-                                    dstr.erase(0, dstr.find(" ") + 1);
+                                    elems[i * 14 + 9];
                                 }
                             }
-
-                            if (dstr == "") { break; }
-                            else { dstr.erase(0, dstr.find(" ") + 1); }
+                        }
+                        else
+                        {
+                            //誰もいない
+                            for (int j = 0; j < players->getMultiplayerSize(); j++)
+                            {
+                                players->deletePlayer(players->getPlayerID(j));
+                            }
                         }
 
                         if (usrid.size() != 0)

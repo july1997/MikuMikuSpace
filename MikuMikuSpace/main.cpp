@@ -62,7 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     if (!scene.update())
     {
-        //if (scene.login())
+        if (scene.login())
         {
             scene.loading();
             stage.setScale(12.f);
@@ -95,12 +95,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
                 if (CheckHitKey(KEY_INPUT_U) != 0)
                 {
-                    scene.upload();
+                    // scene.upload();
                 }
 
                 if (CheckHitKey(KEY_INPUT_M) != 0)
                 {
-                    scene.download();
+                    //scene.download();
                 }
 
                 if (!scene.chat())
