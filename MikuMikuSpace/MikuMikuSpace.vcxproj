@@ -30,6 +30,7 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Effekseer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="MultiPlayers.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="Core.h" />
     <ClInclude Include="Effekseer.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="MultiPlayers.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkManager.h" />
