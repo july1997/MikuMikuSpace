@@ -333,7 +333,15 @@ bool AccountManager::sendlist(int account)
 
                 for (int i = 0; i < sendList[account].size(); i++)
                 {
-                    usrs.append(to_string(accounts[sendList[account][i]]->myID) + " " + accounts[sendList[account][i]]->name + " " + old_pos[sendList[account][i]] + " ");
+                    usrs.append(to_string(accounts[sendList[account][i]]->myID) + " " + 
+                    accounts[sendList[account][i]]->name + " " + old_pos[sendList[account][i]]);
+
+                    string model = data.getModelData(accounts[sendList[account][i]]->myID);
+                    if(model != ""){
+                        usrs.append(model + " ");
+                    } else {
+                        usrs.append("0 ");
+                    }
                 }
 
                 accounts[account]->encryptByAes(usrs);
@@ -491,7 +499,7 @@ void AccountManager::update()
                             }
                             else if (mess == "UP_M ")
                             {
-                                string err;
+                                /*string err;
                                 auto json = json11::Json::parse(dmess, err);
                                 int model_id = data.regstModel(accounts[l]->myID, json["model_name"].string_value(), json["model_file_name"].string_value(), json["model_type"].int_value());
 
@@ -501,7 +509,7 @@ void AccountManager::update()
                                     string key = data.createAccessKey(model_id);
                                     accounts[l]->encryptByAes(key);
                                     accounts[l]->send(3, "ACCESS", key);
-                                }
+                                }*/
                             }
                             else if (mess == "DL ")
                             {
