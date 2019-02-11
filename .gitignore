@@ -275,3 +275,6 @@ MikuMikuSpaceUpdater/Models/
 /MikuMikuOpenWorld/Models
 /MikuMikuOpenWorld/System
 .svn
+
+*.o
+.vscode
