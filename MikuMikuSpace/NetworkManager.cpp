@@ -2,9 +2,11 @@
 
 
 
-NetworkManager::NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_) : players(new MultiPlayers(bullet_, world_))
+NetworkManager::NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_,
+                               std::shared_ptr<ModelManager> model_manager_) : players(new MultiPlayers(bullet_, world_))
 {
     cahara = cahara_;
+    model_manager = model_manager_;
 }
 
 
@@ -208,13 +210,39 @@ void NetworkManager::update()
                                 if (players->findPlayerID(uid) == -1)
                                 {
                                     players->addPlayer(uid, elems[i * 10 + 1]);
-                                    players->copyModel(uid, cahara->getModelHandle());
-                                    players->setup(uid);
-                                    players->addPlayerSize();
-                                    btVector3 bt = btVector3(stod(elems[i * 10 + 2]), stod(elems[i * 10 + 3]), stod(elems[i * 10 + 4]));
-                                    btQuaternion bq = btQuaternion(stod(elems[i * 10 + 5]), stod(elems[i * 10 + 6]), stod(elems[i * 10 + 7]), stod(elems[i * 10 + 8]));
-                                    players->setPosBullet(uid, bt, bq);
-                                    elems[i * 14 + 9];
+
+                                    if (elems[i * 14 + 9] != "0")
+                                    {
+                                        int model_id = stoi(elems[i * 14 + 9]);
+                                        // moddel_idをmodelmanagerに問い合わせ
+                                        int handle = model_manager->getModel(model_id);
+
+                                        if (handle != -1)
+                                        {
+                                            user_modelid[model_id] = std::pair<int, int>(uid, 0);
+                                            players->setModel(uid, handle);
+                                        }
+                                        else
+                                        {
+                                            user_modelid[model_id] = std::pair<int, int>(uid, 1);
+                                            //ダウンロードする必要あり
+                                            network.send(3, "DL", u8"{\"model_id\" :" + std::to_string(model_id) + "}", 0, 1, 0, 1);
+                                        }
+
+                                        btVector3 bt = btVector3(stod(elems[i * 10 + 2]), stod(elems[i * 10 + 3]), stod(elems[i * 10 + 4]));
+                                        btQuaternion bq = btQuaternion(stod(elems[i * 10 + 5]), stod(elems[i * 10 + 6]), stod(elems[i * 10 + 7]), stod(elems[i * 10 + 8]));
+                                        players->setPosBullet(uid, bt, bq);
+                                    }
+                                    else
+                                    {
+                                        //初期モデル
+                                        players->copyModel(uid, model_manager->getModel(0));
+                                        players->setup(uid);
+                                        players->addPlayerSize();
+                                        btVector3 bt = btVector3(stod(elems[i * 10 + 2]), stod(elems[i * 10 + 3]), stod(elems[i * 10 + 4]));
+                                        btQuaternion bq = btQuaternion(stod(elems[i * 10 + 5]), stod(elems[i * 10 + 6]), stod(elems[i * 10 + 7]), stod(elems[i * 10 + 8]));
+                                        players->setPosBullet(uid, bt, bq);
+                                    }
                                 }
                             }
                         }
@@ -223,7 +251,11 @@ void NetworkManager::update()
                             //誰もいない
                             for (int j = 0; j < players->getMultiplayerSize(); j++)
                             {
-                                players->deletePlayer(players->getPlayerID(j));
+                                unsigned int uid = players->getPlayerID(j);
+                                players->deletePlayer(uid);
+                                auto itr = user_modelid.find(uid);
+
+                                if (itr != user_modelid.end()) { user_modelid.erase(itr); }
                             }
                         }
 
@@ -242,6 +274,9 @@ void NetworkManager::update()
                                 if (!find)
                                 {
                                     players->deletePlayer(usrid[i]);
+                                    auto itr = user_modelid.find(usrid[i]);
+
+                                    if (itr != user_modelid.end()) { user_modelid.erase(itr); }
                                 }
                             }
                         }
@@ -344,7 +379,11 @@ void NetworkManager::update()
                 }
                 else if (mess == "ACCESS ")
                 {
-                    access_key = dstr;
+                    string err;
+                    auto json = json11::Json::parse(dstr, err);
+                    model_manager->createConfig(json["model_id"].int_value(), json.dump());
+                    int handle = model_manager->downloadModel(json["model_id"].int_value(),
+                                 json["access_key"].string_value(), players->getModelHandle(user_modelid[json["model_id"].int_value()].first));
                 }
             }
             else if (str.substr(0, 6) == "SYSTEM")
@@ -473,6 +512,38 @@ void NetworkManager::multiplayerUpdate()
 {
     players->playAnimeControl();
     players->update();
+
+    if (user_modelid.size() != 0)
+    {
+        // まだ読み込みが完了していないモデルを更新
+        for (auto usr = user_modelid.begin(); usr != user_modelid.end(); ++usr)
+        {
+            // 設定完了
+            if (usr->second.second == 2) { continue; }
+
+            if (usr->second.second == 0)
+            {
+                // ロードが終了したか確認
+                if (!model_manager->isLoading(usr->first))
+                {
+                    // セットアップ
+                    players->setup(usr->second.first);
+                    players->addPlayerSize();
+                    usr->second.second = 2;
+                }
+            }
+            else if (usr->second.second == 1)
+            {
+                // ダウンロードが完了したか確認
+                if (!model_manager->isDownloading(usr->first))
+                {
+                    players->setup(usr->second.first);
+                    players->addPlayerSize();
+                    usr->second.second = 2;
+                }
+            }
+        }
+    }
 }
 
 size_t NetworkManager::getMultiplayerSize()
@@ -485,6 +556,7 @@ int NetworkManager::sendChat(string str)
     return network.send(3, "RES", str, 0, 1, 0, 1);
 }
 
+/*
 void NetworkManager::uploadModel(string filepath)
 {
     network.send(3, "UP_M", u8"{\"model_name\" : \"どっと式初音ミク_V3\", \"model_file_name\" : \"どっと式初音ミク_V3.mv1\", \"model_type\" : 1}", 0, 1, 0, 1);
@@ -530,6 +602,7 @@ void NetworkManager::downloadModel(int model_id)
 
     return;
 }
+*/
 
 void NetworkManager::displayPing(int x, int y, int color)
 {

@@ -31,8 +31,10 @@ class MultiPlayers
         int addPlayer(unsigned int PlayerID, std::string name);
 
         int loadModel(unsigned int PlayerID, char *ModelPath);
-        int  setModel(unsigned int PlayerID, int ModelHandle, std::string ModelPath);
+        int  setModel(unsigned int PlayerID, int ModelHandle);
         int copyModel(unsigned int PlayerID, int ModelHandle);
+
+        int *getModelHandle(unsigned int PlayerID);
 
         int deletePlayer(unsigned int PlayerID);
 

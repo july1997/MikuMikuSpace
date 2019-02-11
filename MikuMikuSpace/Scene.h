@@ -28,8 +28,6 @@ class Scene
 
         bool update();
 
-        void upload();
-        void download();
     private:
 
         bool connect();

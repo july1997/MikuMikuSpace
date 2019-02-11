@@ -32,8 +32,8 @@ class WebDownloader
         FILE *file;
         char *Buf_main;
         bool isOpen = 0;
-        char *Directory;
-        char *Name;
+        std::string Directory;
+        std::string Name;
         HINTERNET hRequest;
         HANDLE hFile;
         DWORD filesize;//ファイル全体のサイズ
@@ -50,7 +50,7 @@ class WebDownloader
         int httpOpen(const char *Server_Host_Address);
         int httpsOpen(const char *Server_Host_Address);
 
-        int httpGET(const char *FileLocation, const char *Referer, const char *SaveDirectory, const char *SaveName, std::string query = "");
+        int httpGET(const char *FileLocation, const char *Referer, std::string SaveDirectory, std::string SaveName, std::string query = "");
         int httpPOST(const char *FileLocation, const char *Referer, const char *SaveDirectory, const char *SaveName, const char *poststr);
         BOOL httpPUT(std::string upFile, std::string query = "");
 

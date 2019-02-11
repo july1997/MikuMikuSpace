@@ -62,8 +62,8 @@ class Character : public Model
         Character(std::shared_ptr<Bullet_physics> bullet_, int world);
         ~Character();
 
-
         virtual void loadModel(const char *FileName);
+        void setModelName(std::string model_name);
 
         void setup();
 

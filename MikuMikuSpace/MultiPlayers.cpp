@@ -45,7 +45,7 @@ int MultiPlayers::loadModel(unsigned int PlayerID, char *ModelPath)
     return 0;
 }
 
-int MultiPlayers::setModel(unsigned int PlayerID, int ModelHandle, std::string ModelPath)
+int MultiPlayers::setModel(unsigned int PlayerID, int ModelHandle)
 {
     players[findPlayerID(PlayerID)]->setModel(ModelHandle);
     return 0;
@@ -59,6 +59,12 @@ int MultiPlayers::copyModel(unsigned int PlayerID, int ModelHandle)
     //設定をもどす
     MV1SetLoadModelUsePhysicsMode(DX_LOADMODEL_PHYSICS_LOADCALC);
     return 0;
+}
+
+
+int *MultiPlayers::getModelHandle(unsigned int PlayerID)
+{
+    return players[findPlayerID(PlayerID)]->getModelHandlePointer();
 }
 
 int MultiPlayers::deletePlayer(unsigned int PlayerID)

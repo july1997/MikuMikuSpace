@@ -22,6 +22,11 @@ void Character::loadModel(const char *FileName)
     modelname = std::string(FileName);
 }
 
+void Character::setModelName(std::string model_name)
+{
+    modelname = model_name;
+}
+
 void Character::draw()
 {
     // 物理演算を６０分の１秒経過したという想定で実行

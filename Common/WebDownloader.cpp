@@ -55,7 +55,7 @@ int WebDownloader::httpsOpen(const char *Server_Host_Address)
     return 0;
 }
 
-int WebDownloader::httpGET(const char *FileLocation, const char *Referer, const char *SaveDirectory, const char *SaveName, std::string query)
+int WebDownloader::httpGET(const char *FileLocation, const char *Referer, std::string SaveDirectory, std::string SaveName, std::string query)
 {
     std::string url(FileLocation);
 
@@ -135,8 +135,8 @@ int WebDownloader::httpGET(const char *FileLocation, const char *Referer, const 
     {
         //正常終了
         isOpen = 1;
-        Directory = (char*)SaveDirectory;
-        Name = (char*)SaveName;
+        Directory = SaveDirectory;
+        Name = SaveName;
         return 0;
     }
 }
@@ -275,7 +275,7 @@ int WebDownloader::WebDownloading()
             Buf_main = (char *)malloc(RequiredBufSize * sizeof(char));
             dwReadSize = RequiredBufSize / 100;   // 1 回の読み出しでデータの 1% を読み出します
             char Buf_SaveName[200];
-            sprintf_s(Buf_SaveName, sizeof(Buf_SaveName), "%s\\%s", Directory, Name);//保存するファイル名の生成
+            sprintf_s(Buf_SaveName, sizeof(Buf_SaveName), "%s\\%s", Directory.c_str(), Name.c_str());//保存するファイル名の生成
             fopen_s(&file, Buf_SaveName, "wb");
             ReadSize_sum = 0;        //読み出しサイズの合計
             DWORD cReadCount;

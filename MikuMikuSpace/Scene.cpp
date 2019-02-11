@@ -378,7 +378,7 @@ void Scene::loading()
         ui.drawBackgroundImage();
         ui.drawString(font2, u8"ロード中です…", 640, 200, 1);
         fps.displayFps(1280 - 20, 0);
-        fps.measureFps();
+        fps.controlClearDrawScreenFps();
     }
     while (ProcessMessage() == 0 && GetASyncLoadNum() != 0);
 }
@@ -496,16 +496,4 @@ void Scene::tutorial()
 
         if (CheckHitKeyAll() != 0) { tutorialf = 0; }
     }
-}
-
-void Scene::upload()
-{
-    network->uploadModel("");
-    WaitTimer(500);
-}
-
-void Scene::download()
-{
-    network->downloadModel(1);
-    WaitTimer(500);
 }

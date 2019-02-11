@@ -6,15 +6,16 @@
 
 #include "Character.h"
 #include "MultiPlayers.h"
+#include "ModelManager.h"
 
 #include "../Common/WebDownloader.h"
-
 #include "../Common/Server.h"
+#include "../Common/Utility/json11.hpp"
 
 class NetworkManager
 {
     public:
-        NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_);
+        NetworkManager(std::shared_ptr<Bullet_physics> bullet_, int world_, std::shared_ptr<Character> cahara_, std::shared_ptr<ModelManager> model_manager_);
         ~NetworkManager();
 
         bool connect();
@@ -46,14 +47,11 @@ class NetworkManager
 
         int sendChat(string str);
 
-        void uploadModel(string filepath);
-
-        void downloadModel(int model_id);
-
         int ping = 0, ping_show = 0;
         void displayPing(int x, int y, int color);
 
         string getServerDetail();
+
     private:
 
         std::string coneection = std::string(MMS_Server);
@@ -74,6 +72,9 @@ class NetworkManager
 
         std::vector<std::string> chat;
 
-        string access_key;
+        string access_key = "";
+
+        std::shared_ptr<ModelManager> model_manager;
+        std::map<int, std::pair<int, int>> user_modelid;
 };
 

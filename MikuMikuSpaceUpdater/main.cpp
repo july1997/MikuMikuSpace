@@ -18,7 +18,7 @@
 #include "unzip.h"
 using namespace std;
 
-#pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "zlibstat.lib")
 
 #define for if (0) ; else for
 #define IsShiftJIS(x) ((BYTE)((x ^ 0x20) - 0xA1) <= 0x3B)

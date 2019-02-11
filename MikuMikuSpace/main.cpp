@@ -16,6 +16,7 @@
 #include "Object.h"
 #include "Core.h"
 #include "VstHost.h"
+#include "ModelManager.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -30,26 +31,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //fps.setFps(30.0f);
     Camera camera;
     VECTOR vp = { 0, 10, 0 };
-    /*WebDownloader p;
-    //https://localhost:13980/
-    p.httpsOpen("192.168.0.19");
-    p.httpPUT("Log.txt","accesskey=UTT4pz8mgo");
-    p.StartPutting();
-    while (p.getPutSize() != p.getPuttedSize());
-    string s = p.getMessege();
-    return 0;*/
     std::shared_ptr<Bullet_physics> bullet(new Bullet_physics);
     int world = bullet->createWorld(VGet(-0, -0, -0), VGet(10000.f, 10000.f, 10000.f));
+    std::shared_ptr<ModelManager> model_manager(new ModelManager());
     //非同期読み込み設定に変更
     SetUseASyncLoadFlag(TRUE);
     Model stage;
     stage.loadModel(u8"System/Stage/唄川町 ver0.10/models/唄川町Light【軽量版】ver0.10.mv1");
-    std::shared_ptr<Character> chara(new Character(bullet, world));
-    chara->loadModel(u8"System/Model/Tda式初音ミクV4X_Ver1.00/Tda式初音ミクV4X_Ver1.00/Tda式初音ミクV4X.mv1");
+    model_manager->setup();
     Model sky;
     sky.loadModel(u8"System/Skybox/skydome/skybox.mqo");
     //設定を戻す
     SetUseASyncLoadFlag(FALSE);
+    std::shared_ptr<Character> chara(new Character(bullet, world));
+    chara->setModel(model_manager->getModel(0));
+    chara->setModelName(model_manager->getDefaultModelName());
     //int specCubeTex = LoadGraph(u8"Skybox/GrandCanyon/skybox_32.dds");
     //SetUseTextureToShader(2, specCubeTex);
     //Youtube yotube;
@@ -57,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //while(yotube.downloadmovie("https://www.youtube.com/watch?v=wDVX2bEcJtk"))ProcessMessage();
     //yotube.playMovie();
     //Effekseer_DX effect;
-    std::shared_ptr<NetworkManager> network(new NetworkManager(bullet, world, chara));
+    std::shared_ptr<NetworkManager> network(new NetworkManager(bullet, world, chara, model_manager));
     Scene scene(network);
 
     if (!scene.update())
@@ -93,16 +89,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 scene.drawName();
                 scene.tutorial();
 
-                if (CheckHitKey(KEY_INPUT_U) != 0)
-                {
-                    // scene.upload();
-                }
-
-                if (CheckHitKey(KEY_INPUT_M) != 0)
-                {
-                    //scene.download();
-                }
-
                 if (!scene.chat())
                 {
                     chara->playerMovementKeyboard();
@@ -112,6 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     chara->noMovement();
                 }
 
+                model_manager->update();
                 network->displayPing(1280 - 50, 720 - 15, -1);
                 fps.displayFps(1280 - 20, 0);
                 fps.controlClearDrawScreenFps();

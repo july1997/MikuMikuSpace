@@ -52,7 +52,12 @@ class Model
             return modelhandle;
         }
 
-        void setModel(int &ModelHandel)
+        int *getModelHandlePointer()
+        {
+            return &modelhandle;
+        }
+
+        void setModel(int ModelHandel)
         {
             modelhandle = ModelHandel;
         }

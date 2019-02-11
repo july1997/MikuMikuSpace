@@ -24,6 +24,7 @@
     <ClCompile Include="..\Common\UI\UI.cpp" />
     <ClCompile Include="..\Common\Utility\json11.cpp" />
     <ClCompile Include="..\Common\WebDownloader.cpp" />
+    <ClCompile Include="..\Common\Zip\unzipper.cpp" />
     <ClCompile Include="Bullet_physics.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -51,6 +52,12 @@
     <ClInclude Include="..\Common\Utility\json11.hpp" />
     <ClInclude Include="..\Common\Version.h" />
     <ClInclude Include="..\Common\WebDownloader.h" />
+    <ClInclude Include="..\Common\Zip\ioapi.h" />
+    <ClInclude Include="..\Common\Zip\unzip.h" />
+    <ClInclude Include="..\Common\Zip\unzipper.h" />
+    <ClInclude Include="..\Common\Zip\zconf.h" />
+    <ClInclude Include="..\Common\Zip\zip.h" />
+    <ClInclude Include="..\Common\Zip\zlib.h" />
     <ClInclude Include="Bullet_physics.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
@@ -160,13 +167,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\cryptopp800;C:\EffekseerRuntime140\src\include;C:\bullet\bullet3-2.87\src;C:\boost_1_63_0\include\boost-1_66;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\cryptopp800;C:\EffekseerRuntime140\src\include;C:\bullet\bullet3-2.87\src;C:\boost_1_63_0\include\boost-1_66;C:\Users\kamim\source\repos\MikuMikuSpace\Common\Zip\zlib-1.2.7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\boost_1_63_0\lib\x64;C:\cryptopp800\x64\Output\Debug;C:\EffekseerRuntime140\src\lib\x64;C:\bullet\bullet3-2.87\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\boost_1_63_0\lib\x64;C:\cryptopp800\x64\Output\Debug;C:\EffekseerRuntime140\src\lib\x64;C:\bullet\bullet3-2.87\bin;C:\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibStatDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -196,7 +203,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\cryptopp800;C:\EffekseerRuntime140\src\include;C:\bullet\bullet3-2.87\src;C:\boost_1_63_0\include\boost-1_66;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\cryptopp800;C:\EffekseerRuntime140\src\include;C:\bullet\bullet3-2.87\src;C:\boost_1_63_0\include\boost-1_66;C:\zlib-1.2.11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -204,7 +211,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\boost_1_63_0\lib\x64;C:\cryptopp800\x64\Output\Release;C:\EffekseerRuntime140\src\lib\x64;C:\bullet\bullet3-2.87\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\boost_1_63_0\lib\x64;C:\cryptopp800\x64\Output\Release;C:\EffekseerRuntime140\src\lib\x64;C:\bullet\bullet3-2.87\bin;C:\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibStatRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
