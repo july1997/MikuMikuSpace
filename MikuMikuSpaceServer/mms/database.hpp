@@ -45,4 +45,6 @@ class dataBase
         string createAccessKey(int model_id);
 
         string getModelData(int user_id);
+
+        string getModelDataDetail(int model_id);
 };

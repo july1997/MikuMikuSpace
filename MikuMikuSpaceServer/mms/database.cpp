@@ -198,16 +198,37 @@ string dataBase::getModelData(int user_id)
 {
     try
     {
-        auto res = query("SELECT * FROM model_data WHERE user_id = " + to_string(user_id));
+        auto res = query("SELECT model_id FROM model_data WHERE user_id = " + to_string(user_id));
         std::string str = "";
 
         while (res->next())
         {
-            str = res->getString("model_id") + " ";
-            //str += res->getString("model_name")+ " ";
-            //str += res->getString("model_file_pash")+ " ";
-            //str += res->getString("model_file_name")+ " ";
-            //str += res->getString("model_type");
+            str = res->getString("model_id") ;
+        }
+
+        return str;
+    }
+    catch (sql::SQLException &e)
+    {
+        cout << "# ERR: " << e.what();
+        return "";
+    }
+}
+
+string dataBase::getModelDataDetail(int model_id)
+{
+    try
+    {
+        auto res = query("SELECT * FROM model_data WHERE model_id = " + to_string(model_id));
+        std::string str = "";
+
+        while (res->next())
+        {
+            str =  "\"model_id\":" + res->getString("model_id") + ",";
+            str += "\"model_name\":\"" + res->getString("model_name")+ "\",";
+            str += "\"model_file_pash\":\"" + res->getString("model_file_pash")+ "\",";
+            str += "\"model_file_name\":\"" + res->getString("model_file_name")+ "\",";
+            str += "\"model_type\":" + res->getString("model_type");
         }
 
         return str;

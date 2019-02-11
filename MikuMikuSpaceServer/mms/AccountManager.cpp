@@ -515,11 +515,18 @@ void AccountManager::update()
                             {
                                 string err;
                                 auto json = json11::Json::parse(dmess, err);
-                                cout << json["model_id"].int_value() << endl;
-                                string key = data.createAccessKey(json["model_id"].int_value());
+                                int model_id = json["model_id"].int_value();
+                       
+                                cout << model_id << endl;
+                                string model_data = data.getModelDataDetail(model_id);
+
+                                string key = data.createAccessKey(model_id);
                                 cout << key << endl;
-                                accounts[l]->encryptByAes(key);
-                                accounts[l]->send(3, "ACCESS", key);
+
+                                string contens("{\"access_key\":\"" + key + "\"," + model_data + "}");
+
+                                accounts[l]->encryptByAes(contens);
+                                accounts[l]->send(3, "ACCESS", contens);
                             }
                         }
                     }
