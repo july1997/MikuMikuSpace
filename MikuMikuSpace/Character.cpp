@@ -19,12 +19,17 @@ void Character::loadModel(const char *FileName)
     modelhandle = MV1LoadModel(FileName);
     //設定をもどす
     MV1SetLoadModelUsePhysicsMode(DX_LOADMODEL_PHYSICS_LOADCALC);
-    modelname = std::string(FileName);
+    //modelname = std::string(FileName);
 }
 
-void Character::setModelName(std::string model_name)
+void Character::setModelID(int model_id_)
 {
-    modelname = model_name;
+	model_id = model_id_;
+}
+
+int Character::getModelID()
+{	
+	return model_id;
 }
 
 void Character::draw()

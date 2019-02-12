@@ -83,15 +83,19 @@ int ModelManager::getModel(int mode_id)
     auto json = json11::Json::parse(str, err);
 
     // 非同期読み込み設定に変更
-    //SetUseASyncLoadFlag(TRUE);
+    SetUseASyncLoadFlag(TRUE);
 
     if (json["model_type"].int_value() == 0)
     {
         //mv1以外で変更
         MV1SetLoadModelAnimFilePath("System/Motion/");
+
+		//MV1SetLoadModelUsePhysicsMode(DX_LOADMODEL_PHYSICS_REALTIME);
     }
 
-    modelhandles[mode_id] = MV1LoadModel((model_load_dir + "/" + json["model_file_name"].string_value()).c_str());
+	string filepath = json["model_file_pash"].string_value() + u8"/" + json["model_file_name"].string_value();
+    modelhandles[mode_id] = MV1LoadModel(filepath.c_str());
+
     MV1SetLoadModelAnimFilePath(NULL);
     SetUseASyncLoadFlag(FALSE);
     return modelhandles[mode_id];
@@ -129,6 +133,9 @@ void ModelManager::update()
             if (r == 0)
             {
                 dl->StartDownload();
+
+				finish = false;
+				start = true;
             }
             else
             {
@@ -136,35 +143,34 @@ void ModelManager::update()
                 task.erase(task.begin());
                 access_keys.erase(access_keys.begin());
                 mode_ids.erase(mode_ids.begin());
-            }
 
-            finish = false;
-            start = true;
+				finish = false;
+				start = false;
+            }
         }
 
         if (!finish)
         {
             if (!dl->getIsOpen())
             {
-                if (dl->getDownloadSize() != dl->getReadSize())
-                {
-                    DrawFormatString(0, 0, -1, "%d / %d", dl->getDownloadSize(), dl->getReadSize());
-                }
-                else
-                {
+                if (dl->getDownloadSize() == dl->getReadSize())
+				{
                     finish = true;
                 }
             }
         }
         else
         {
-            //ファイルができるまで待つ
+            // ファイルができるまで待つ
             WaitTimer(100);
+			// 解凍
             unzipper zip;
-            zip.openZip(model_load_dir + "/" + to_string(mode_ids[0]) + string(".zip"), model_load_dir + "/");
+            zip.openZip(model_load_dir + "/" + to_string(mode_ids[0]) + string(".zip"), model_load_dir + "/" + to_string(mode_ids[0]));
             zip.unzip();
+
             // 完了
             *task[0] = getModel(mode_ids[0]);
+
             finish = false;
             start = false;
             task.erase(task.begin());
@@ -187,4 +193,9 @@ bool ModelManager::isDownloading(int mode_id)
     {
         return 0;
     }
+}
+
+int ModelManager::countTask()
+{
+	return task.size();
 }

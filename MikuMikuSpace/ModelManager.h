@@ -66,5 +66,7 @@ class ModelManager
 
         // モデルがダウンロード中か
         bool isDownloading(int mode_id);
+
+		int countTask();
 };
 

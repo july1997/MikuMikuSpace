@@ -11,8 +11,7 @@
 class Character : public Model
 {
         std::shared_ptr<Bullet_physics> bullet;
-        int caharacter;
-        std::string modelname;
+		int caharacter, model_id;
 
         bool _right = 0, _left = 0, _backward = 0, _forward = 0, _jump = 0, _run = 0;
         bool right = 0, left = 0, backward = 0, forward = 0, jump = 0, run = 0;
@@ -63,7 +62,8 @@ class Character : public Model
         ~Character();
 
         virtual void loadModel(const char *FileName);
-        void setModelName(std::string model_name);
+        void setModelID(int model_id_);
+		int getModelID();
 
         void setup();
 

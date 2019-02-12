@@ -44,8 +44,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //設定を戻す
     SetUseASyncLoadFlag(FALSE);
     std::shared_ptr<Character> chara(new Character(bullet, world));
-    chara->setModel(model_manager->getModel(0));
-    chara->setModelName(model_manager->getDefaultModelName());
+    //chara->setModel(model_manager->getModel(0));
+    //chara->setModelName(model_manager->getDefaultModelName());
     //int specCubeTex = LoadGraph(u8"Skybox/GrandCanyon/skybox_32.dds");
     //SetUseTextureToShader(2, specCubeTex);
     //Youtube yotube;

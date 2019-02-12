@@ -157,7 +157,8 @@ namespace ziputils
 
     bool unzipper::openZip(string path, string outfiledir)
     {
-        strTargetPath = outfiledir;
+        strTargetPath = outfiledir + "/";
+		openFilePath = path;
         hUnzip = unzOpen(path.c_str());
         unz64_s* s;
         s = (unz64_s*)hUnzip;
@@ -177,6 +178,12 @@ namespace ziputils
 
     void unzipper::unzip()
     {
+		// すでにディレクトリがあれば削除
+		removeDirectory(strTargetPath.c_str());
+
+		//出力先ディレクトリ作成
+		CreateDirectory(strTargetPath.c_str(), NULL);
+
         while (1)
         {
             char szConFilename[512];
@@ -227,6 +234,9 @@ namespace ziputils
 
             nowfilesize += fileInfo.compressed_size;
         }
+
+		// zipファイル削除
+		DeleteFile(openFilePath.c_str());
     }
 
     size_t unzipper::getNoFilewSize()

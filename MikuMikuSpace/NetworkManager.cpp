@@ -34,7 +34,7 @@ bool NetworkManager::startCommunication()
     if (network.send(1, "GET", "", 0, 0) != -1)
     {
         network.receive_start();
-        network.UDP_receive_start();
+        //network.UDP_receive_start();
         t = std::thread(&NetworkManager::update, this);
         t.detach();
         return 1;
@@ -132,6 +132,32 @@ void NetworkManager::update()
                         dstr.erase(0, id.length() + 1);
                         string name = dstr.substr(0, dstr.find(" "));
                         dstr.erase(0, name.length() + 1);
+
+						// モデルID取得
+						int model_id = stoi(dstr.substr(0, dstr.find(" ")));
+						dstr.erase(0, name.length() + 1);
+						if (model_id != 0)
+						{
+							cahara->setModelID(model_id);
+							// moddel_idをmodelmanagerに問い合わせ
+							int handle = model_manager->getModel(model_id);
+
+							if (handle != -1)
+							{
+								cahara->setModel(handle);
+							}
+							else
+							{
+								//ダウンロードする必要あり
+								network.send(3, "DL", u8"{\"model_id\" :" + std::to_string(model_id) + "}", 0, 1, 0, 1);
+								isCharaDownload = true;
+							}
+						} 
+						else 
+						{
+							cahara->setModelID(-1);
+							cahara->setModel(model_manager->getModel(0));
+						}
                         network.setid(stoi(id));
                         network.setname(name);
                     }
@@ -382,8 +408,17 @@ void NetworkManager::update()
                     string err;
                     auto json = json11::Json::parse(dstr, err);
                     model_manager->createConfig(json["model_id"].int_value(), json.dump());
-                    int handle = model_manager->downloadModel(json["model_id"].int_value(),
-                                 json["access_key"].string_value(), players->getModelHandle(user_modelid[json["model_id"].int_value()].first));
+					if (cahara->getModelID() != json["model_id"].int_value())
+					{
+						int handle = model_manager->downloadModel(json["model_id"].int_value(),
+							json["access_key"].string_value(), players->getModelHandle(user_modelid[json["model_id"].int_value()].first));
+					}
+					else
+					{
+						// プレイヤーのモデル
+						int handle = model_manager->downloadModel(json["model_id"].int_value(),
+							json["access_key"].string_value(), cahara->getModelHandlePointer());
+					}
                 }
             }
             else if (str.substr(0, 6) == "SYSTEM")

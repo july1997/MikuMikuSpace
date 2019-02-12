@@ -43,6 +43,7 @@ class NetworkManager
         size_t getMultiplayerSize();
 
         std::shared_ptr<Character> cahara;
+		bool isCharaDownload = false;
         MultiPlayers *players;
 
         int sendChat(string str);
@@ -51,6 +52,8 @@ class NetworkManager
         void displayPing(int x, int y, int color);
 
         string getServerDetail();
+
+		std::shared_ptr<ModelManager> model_manager;
 
     private:
 
@@ -74,7 +77,6 @@ class NetworkManager
 
         string access_key = "";
 
-        std::shared_ptr<ModelManager> model_manager;
         std::map<int, std::pair<int, int>> user_modelid;
 };
 

@@ -35,7 +35,7 @@ namespace ziputils
 
             unzFile hUnzip;
             size_t zipfilesize, nowfilesize = 0.0;
-            string strTargetPath;
+            string openFilePath, strTargetPath;
 
             bool installed = 0;
 
