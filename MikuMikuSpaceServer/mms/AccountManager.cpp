@@ -84,7 +84,10 @@ bool AccountManager::login(int account, string str)
                 {
                     if (!findID(id))
                     {
-                        string es("SUCCESS " + to_string(id) + " " + str);
+                         string model = data.getModelData(id);
+                         if(model == "")model = "0";
+
+                        string es("SUCCESS " + to_string(id) + " " + str + " " + model );
                         accounts[account]->encryptByAes(es);
                         accounts[account]->send(3, "LOGIN", es);
                         accounts[account]->myID = id;

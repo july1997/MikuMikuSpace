@@ -272,9 +272,8 @@ MikuMikuSpaceUpdater/System/
 MikuMikuSpaceUpdater/Debug/
 MikuMikuSpaceUpdater/x64/
 MikuMikuSpaceUpdater/Models/
-/MikuMikuOpenWorld/Models
-/MikuMikuOpenWorld/System
 .svn
 
 *.o
 .vscode
+MikuMikuSpaceServer/mms/Server

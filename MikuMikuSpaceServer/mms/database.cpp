@@ -131,7 +131,7 @@ bool dataBase::regst(string mail, string pass, string name, int *id)
                 }
 
                 *id = lastid + 1;
-                int count = update("INSERT INTO user_data VALUES(" + to_string(lastid + 1) + ", '" + mail + "', SHA2(SHA2('" + pass + "', 256), 256), '" + name + "')");
+                int count = update("INSERT INTO user_data VALUES(" + to_string(lastid + 1) + ", '" + mail + "', SHA2(SHA2('" + pass + "', 256), 256), '" + name + "', now())");
                 
                 return count == 1;
             }
@@ -182,7 +182,7 @@ string dataBase::createAccessKey(int model_id)
     try
     {
         string accesskey = createRandomString(10);
-        int count = update("INSERT INTO access_key VALUES( null,'" + accesskey + "'" + "," + to_string(model_id) + ")");
+        int count = update("INSERT INTO access_key VALUES( null,'" + accesskey + "'" + "," + to_string(model_id) + ", now())");
      
         if(count != 0)return accesskey;
         else return "";
