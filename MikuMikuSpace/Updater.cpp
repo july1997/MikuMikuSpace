@@ -12,7 +12,6 @@ Updater::~Updater()
 std::string Updater::downloadRelese()
 {
     dl = new WebDownloader();
-    //https://api.github.com/repos/july1997/MikuMikuOpenWorld/releases
     dl->httpsOpen(MMS_Server);
     int r = dl->httpGET(
                 (char *)"/releases",
@@ -21,7 +20,7 @@ std::string Updater::downloadRelese()
                 (char *)""                     //拡張子も必要なので注意
             );
     std::string relese = dl->getMessege();
-    std::ofstream outputfile("System/Update/releases.txt");
+    std::ofstream outputfile("System/Update/releases.txt", std::ios::trunc);
     outputfile << relese;
     outputfile.close();
     return relese;
@@ -61,7 +60,7 @@ void Updater::lunchUpdater()
     sei.cbSize = sizeof(sei);
     sei.hwnd = NULL;
     sei.lpVerb = _T("open");
-    sei.lpFile = "Updater.exe";
+    sei.lpFile = "MikuMikuSpaceUpdater.exe";
     sei.nShow = SW_SHOWNORMAL;
 
     //標準出力を獲得するならCreateProcessを使う

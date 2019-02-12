@@ -1,3 +1,3 @@
 #pragma once
 
-#define MMS_version "Miku Miku Open World Ver0.0.4"
+#define MMS_version "MikuMikuSpaceBeta1.0.0"

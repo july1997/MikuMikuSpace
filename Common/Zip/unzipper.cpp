@@ -2,6 +2,7 @@
 #include <zlib.h>
 #include <algorithm>
 #include <sstream>
+#include <thread>
 
 namespace ziputils
 {
@@ -157,7 +158,7 @@ namespace ziputils
 
     bool unzipper::openZip(string path, string outfiledir)
     {
-        strTargetPath = outfiledir + "/";
+        if(outfiledir != "" )strTargetPath = outfiledir + "/";
 		openFilePath = path;
         hUnzip = unzOpen(path.c_str());
         unz64_s* s;
@@ -178,11 +179,13 @@ namespace ziputils
 
     void unzipper::unzip()
     {
-		// すでにディレクトリがあれば削除
-		removeDirectory(strTargetPath.c_str());
+		if (strTargetPath != "") {
+			// すでにディレクトリがあれば削除
+			removeDirectory(strTargetPath.c_str());
 
-		//出力先ディレクトリ作成
-		CreateDirectory(strTargetPath.c_str(), NULL);
+			//出力先ディレクトリ作成
+			CreateDirectory(strTargetPath.c_str(), NULL);
+		}
 
         while (1)
         {

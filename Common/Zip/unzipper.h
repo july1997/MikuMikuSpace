@@ -22,6 +22,7 @@ namespace ziputils
 
             bool openZip(string path, string outfiledir);
 
+			// 解凍開始（zipファイルは自動で消えます）
             void startunzip();
 
             size_t getNoFilewSize();
@@ -30,6 +31,8 @@ namespace ziputils
             bool isComplete();
 
             void unzip();
+
+			bool removeDirectory(std::string fileName);
 
         private:
 
@@ -42,8 +45,6 @@ namespace ziputils
             bool IsFileExist(const string &strFilename);
 
             bool CreateDirectoryReflex(const string &strPath);
-
-            bool removeDirectory(std::string fileName);
 
     };
 };

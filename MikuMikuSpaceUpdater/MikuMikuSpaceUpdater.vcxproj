@@ -156,9 +156,9 @@
     <ClCompile Include="..\Common\UI\UI.cpp" />
     <ClCompile Include="..\Common\Utility\json11.cpp" />
     <ClCompile Include="..\Common\WebDownloader.cpp" />
+    <ClCompile Include="..\Common\Zip\unzipper.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="unzip.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Fps.h" />
@@ -169,9 +169,13 @@
     <ClInclude Include="..\Common\Utility\json11.hpp" />
     <ClInclude Include="..\Common\Version.h" />
     <ClInclude Include="..\Common\WebDownloader.h" />
+    <ClInclude Include="..\Common\Zip\ioapi.h" />
+    <ClInclude Include="..\Common\Zip\unzip.h" />
+    <ClInclude Include="..\Common\Zip\unzipper.h" />
+    <ClInclude Include="..\Common\Zip\zconf.h" />
+    <ClInclude Include="..\Common\Zip\zip.h" />
+    <ClInclude Include="..\Common\Zip\zlib.h" />
     <ClInclude Include="Core.h" />
-    <ClInclude Include="ioapi.h" />
-    <ClInclude Include="unzip.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
