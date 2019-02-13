@@ -48,9 +48,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //chara->setModelName(model_manager->getDefaultModelName());
     //int specCubeTex = LoadGraph(u8"Skybox/GrandCanyon/skybox_32.dds");
     //SetUseTextureToShader(2, specCubeTex);
-    //Youtube yotube;
+    Youtube yotube;
     //yotube.upgrade();
-    //while(yotube.downloadmovie("https://www.youtube.com/watch?v=wDVX2bEcJtk"))ProcessMessage();
+    //while(yotube.downloadmovie("https://www.youtube.com/watch?v=Po7QKoLVpr8&t=3s"))ProcessMessage();
     //yotube.playMovie();
     //Effekseer_DX effect;
     std::shared_ptr<NetworkManager> network(new NetworkManager(bullet, world, chara, model_manager));

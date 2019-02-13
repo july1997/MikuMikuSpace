@@ -34,14 +34,14 @@ size_t Youtube::downloadmovie(std::string VideoURL)
             if (VideoURL.find("https://www.youtube.com/watch?") != std::string::npos)
             {
                 exe = std::string("System\\cache\\youtube-dl.exe");
-                std::string pa("-f best[height=360] --no-part -o cache/cache.mp4 ");
+                std::string pa("-f best[height=360] --no-part -o System/cache/cache.mp4 ");
                 std::string th(VideoURL);
                 path = pa + th;
             }
             else
             {
                 exe = std::string("System\\cache\\youtube-dl.exe");
-                std::string pa("--no-part -o cache/cache.mp4 ");
+                std::string pa("--no-part -o System/cache/cache.mp4 ");
                 std::string th(VideoURL);
                 path = pa + th;
             }

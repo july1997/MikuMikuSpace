@@ -277,3 +277,4 @@ MikuMikuSpaceUpdater/Models/
 *.o
 .vscode
 MikuMikuSpaceServer/mms/Server
+*.mp4
