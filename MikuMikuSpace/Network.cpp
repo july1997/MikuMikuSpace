@@ -82,6 +82,8 @@ int Network::receive_start()
 
 int Network::receiveLoop()
 {
+	FpsManager fps;
+
     //別スレッドで立ち上げ
     while (!ProcessMessage())
     {
@@ -120,6 +122,7 @@ int Network::receiveLoop()
                 message.push_back(decoded);
             }
         }
+		fps.controlWaitFps();
     }
 
     return 0;

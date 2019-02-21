@@ -31,9 +31,16 @@ class Youtube
         //yotude-dlの更新
         bool upgrade();
 
+		//ModelHandelのScreenTexture(テクスチャ番号)に動画を再生するための準備
+		void setScreen(const int ModelHandel, const int ScreenTexture);
+
+		void stop();
+
+		void setVolume(int Volume);
+
     private:
 
-        int screen_handel;
+        int screen_handel,movie_handle;
 
         size_t downloadmovieflag = 3;
         size_t timer = 0;
@@ -50,5 +57,7 @@ class Youtube
 
         DWORD dwD;
         HANDLE hHandle;
+
+		int mode_handle = -1, screen_texture;
 };
 

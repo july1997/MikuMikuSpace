@@ -4,7 +4,7 @@ HANDLE m_ChildProcess;
 
 Youtube::Youtube()
 {
-    screen_handel = MakeScreen(640, 360, FALSE);
+    screen_handel = MakeScreen(521, 256, FALSE);
 }
 
 
@@ -70,28 +70,51 @@ size_t Youtube::downloadmovie(std::string VideoURL)
 
 void Youtube::playMovie()
 {
-    screen_handel = LoadGraph("System/cache/cache.mp4");
-    PlayMovieToGraph(screen_handel);
+	movie_handle = LoadGraph("System/cache/cache.mp4");
+    PlayMovieToGraph(movie_handle);
 }
 
 void Youtube::update()
 {
-    DrawGraph(0, 0, screen_handel, FALSE);
+	if (mode_handle == -1) 
+	{
+		DrawGraph(0, 0, movie_handle, FALSE);
+	}
+	else 
+	{
+		// 再生中
+		if (GetMovieStateToGraph(movie_handle) == 1)
+		{
+			//描画先変更　＊カメラの設定が初期化されます
+			SetDrawScreen(screen_handel);
+
+			//テクスチャのサイズに合うように拡大
+			DrawExtendGraph(0, 0, 521, 256, movie_handle, FALSE);
+
+			SetDrawScreen(DX_SCREEN_BACK);
+
+			MV1SetTextureGraphHandle(mode_handle, screen_texture, screen_handel, FALSE);
+		}
+		else
+		{
+			stop();
+		}
+	}
 }
 
 void Youtube::pause()
 {
-    PauseMovieToGraph(screen_handel);
+    PauseMovieToGraph(movie_handle);
 }
 
 void Youtube::seek(int time)
 {
-    SeekMovieToGraph(screen_handel, time);
+    SeekMovieToGraph(movie_handle, time);
 }
 
 int Youtube::getSeek()
 {
-    return TellMovieToGraph(screen_handel);
+    return TellMovieToGraph(movie_handle);
 }
 
 void Youtube::deleteProcess()
@@ -141,6 +164,25 @@ bool Youtube::upgrade()
     if (dwD != STILL_ACTIVE) { upgradeflag = 0; }
 
     return upgradeflag;
+}
+
+void Youtube::setScreen(const int ModelHandel, int ScreenTexture)
+{
+	mode_handle = ModelHandel;
+	screen_texture = ScreenTexture;
+}
+
+void Youtube::stop()
+{
+	pause();
+
+	//削除
+	DeleteGraph(movie_handle);
+}
+
+void Youtube::setVolume(int Volume)
+{
+	SetMovieVolumeToGraph(Volume, movie_handle);
 }
 
 //マルチスレッド関係------------------------------------------------------------------------------

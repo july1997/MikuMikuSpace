@@ -430,7 +430,15 @@ bool Scene::chat()
 
 		if (messe != "")
 		{
-			if (network->sendChat(messe) != -1) { chatmessege.push_back(network->getname() + " : " + messe); }
+			if (messe.find("/yotube ") != std::string::npos) 
+			{
+				messe.erase(0, 8);
+				if(messe.find("https://www.youtube.com/watch?") != std::string::npos)network->sendMovieRequest(messe);
+			}
+			else
+			{
+				if (network->sendChat(messe) != -1) { chatmessege.push_back(network->getname() + " : " + messe); }
+			}
 		}
 
 		ui.setInputString(chatinputbox, "");

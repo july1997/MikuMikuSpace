@@ -1,27 +1,27 @@
-#include "Object.h"
+#include "ObjectManager.h"
 
-Object::Object(Bullet_physics *_bullet, int _world)
+Object::Object(std::shared_ptr<Bullet_physics>_bullet, int _world)
 {
     bullet = _bullet;
     world = _world;
 }
 
-size_t Object::loadModel(const char *FileName, float scale)
+size_t Object::loadModel(const char *FileName)
 {
     models.push_back(std::shared_ptr<Model>(new Model));
     models[objects]->loadModel(FileName);
-    models[objects]->setScale(scale);
+
     bodyhandel.push_back(bullet->createBodytoMesh2(models[objects]->getModelHandle(), world));
     forms.push_back(VGet(0, 0, 0));
     objects++;
     return objects - 1;
 }
 
-size_t Object::loadModel(const char *FileName, VECTOR Form, float scale)
+size_t Object::loadModel(const char *FileName, VECTOR Form)
 {
     models.push_back(std::shared_ptr<Model>(new Model));
     models[objects]->loadModel(FileName);
-    models[objects]->setScale(scale);
+
     bodyhandel.push_back(bullet->createBoxBody(world, Form));
     forms.push_back(Form);
     objects++;
@@ -70,6 +70,7 @@ int Object::setPos(int object, VECTOR pos)
     bullet->getbtRigidBody(bodyhandel[object])->setWorldTransform(bt);
     return 0;
 }
+
 int Object::setRot(int object, VECTOR rot)
 {
     models[object]->setRot(rot);
@@ -78,6 +79,19 @@ int Object::setRot(int object, VECTOR rot)
     bullet->getbtRigidBody(bodyhandel[object])->setWorldTransform(bt);
     return 0;
 }
+
+int Object::setModelScale(int object, float scale)
+{
+	if (object < models.size())
+	{
+		models[object]->setScale(scale);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 int Object::setScale(int object, float scale, float mass)
 {
     if (object < models.size())
@@ -93,7 +107,7 @@ int Object::setScale(int object, float scale, float mass)
         }
         else
         {
-            models[objects]->setScale(scale);
+            models[object]->setScale(scale);
             return 0;
         }
     }
@@ -122,8 +136,16 @@ void Object::update()
 {
     for (size_t i = 0; i < models.size(); i++)
     {
-        models[i]->setPos(bullet->getBodyPos(bodyhandel[i]));
-        models[i]->setRot(bullet->getBodyRot(bodyhandel[i]));
+		if ((forms[i].x == 0 && forms[i].y == 0 && forms[i].z == 0))
+		{
+			models[i]->setPos(bullet->getBodyPos(bodyhandel[i]));
+			models[i]->setRot(bullet->getBodyRot(bodyhandel[i]));
+		}
+		else
+		{
+			models[i]->setPos(bullet->getBodyPos(bodyhandel[i], VGet(0, forms[i].y, 0)));
+			models[i]->setRot(bullet->getBodyRot(bodyhandel[i]));
+		}
     }
 }
 

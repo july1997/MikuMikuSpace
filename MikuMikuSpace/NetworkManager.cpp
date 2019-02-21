@@ -420,6 +420,23 @@ void NetworkManager::update()
 							json["access_key"].string_value(), cahara->getModelHandlePointer());
 					}
                 }
+				else if (mess == "MOV ")
+				{
+					string type = dstr.substr(0, dstr.find(" "));
+					dstr.erase(0, type.length() + 1);
+
+					if (type == "DL")
+					{
+						movieRequest = dstr;
+						chat.push_back(u8"システム : 動画を準備中");
+					} 
+					else if(type == "PLAY")
+					{
+						chat.push_back(u8"システム : 動画の再生を開始します");
+						yotube.playMovie();
+						movieflag = 3;
+					}
+				}
             }
             else if (str.substr(0, 6) == "SYSTEM")
             {
@@ -591,6 +608,10 @@ int NetworkManager::sendChat(string str)
     return network.send(3, "RES", str, 0, 1, 0, 1);
 }
 
+int NetworkManager::sendMovieRequest(std::string str)
+{
+	return network.send(3, "MOV", "REQUEST " + str, 0, 1, 0, 1);
+}
 /*
 void NetworkManager::uploadModel(string filepath)
 {
@@ -651,4 +672,41 @@ string NetworkManager::getServerDetail()
     if (coneection.find("119.171.85.139") != string::npos) { return coneection + " (Home)"; }
 
     return coneection + " (AWS)";
+}
+
+void NetworkManager::setScreen(const int ModelHandel, int ScreenTexture)
+{
+	yotube.setScreen(ModelHandel, ScreenTexture);
+}
+
+void NetworkManager::updateYotude()
+{
+	if (movieRequest != "")
+	{
+		if (movieflag == 0)
+		{
+			if (yotube.downloadmovie(movieRequest) == 0)movieflag = 1;
+		} 
+		else if (movieflag == 1)
+		{
+			network.send(3, "MOV", "READY", 0, 1, 0, 1);
+
+			movieflag = 2;
+			movieRequest = "";
+		}
+		else if (movieflag == 3)
+		{
+			yotube.stop();
+			movieflag = 0;
+		}
+	}
+
+	if (movieflag == 3)
+	{
+		//距離を計算
+		float Length = VSize(VSub(cahara->getPos(), VGet(-208, 10, -173)));
+		yotube.setVolume(10000 - Length * 3);
+
+		yotube.update();
+	}
 }

@@ -7,6 +7,7 @@
 #include "Character.h"
 #include "MultiPlayers.h"
 #include "ModelManager.h"
+#include "Youtube.h"
 
 #include "../Common/WebDownloader.h"
 #include "../Common/Server.h"
@@ -55,6 +56,10 @@ class NetworkManager
 
 		std::shared_ptr<ModelManager> model_manager;
 
+		void setScreen(const int ModelHandel, int ScreenTexture);
+		void updateYotude();
+		int sendMovieRequest(std::string str);
+
     private:
 
         std::string coneection = std::string(MMS_Server);
@@ -78,5 +83,9 @@ class NetworkManager
         string access_key = "";
 
         std::map<int, std::pair<int, int>> user_modelid;
+
+		Youtube yotube;
+		int movieflag = 0;
+		std::string movieRequest;
 };
 
