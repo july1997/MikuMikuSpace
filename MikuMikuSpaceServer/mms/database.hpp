@@ -14,7 +14,7 @@
 
 #include "mysql_config.hpp"
 
-#pragma comment(lib, "mysqlcppconn.lib")
+//#pragma comment(lib, "mysqlcppconn.lib")
 
 using namespace std;
 
@@ -32,6 +32,8 @@ class dataBase
         std::shared_ptr<sql::ResultSet> query(std::string query);
         int update(std::string query);
 
+        void checkConnection();
+
     public:
         dataBase();
         ~dataBase();
@@ -47,4 +49,6 @@ class dataBase
         string getModelData(int user_id);
 
         string getModelDataDetail(int model_id);
+
+        bool checkBanIP(string IP);
 };

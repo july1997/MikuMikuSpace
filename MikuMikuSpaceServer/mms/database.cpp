@@ -30,6 +30,15 @@ dataBase::~dataBase()
 {
 }
 
+void dataBase::checkConnection()
+{
+    // 接続が有効でなければ再接続
+    if(!con->isValid()){
+        con->reconnect();
+        cout << "# reconnect mysql" << endl; 
+    }
+}
+
 string dataBase::createRandomString(int size)
 {
     string sb;
@@ -82,6 +91,8 @@ bool dataBase::login(string mail, string pass, int *id, string *name)
     {
         try
         {
+            checkConnection();
+
             auto res = query("SELECT * FROM user_data WHERE email='" + mail + "' AND password=SHA2(SHA2('" + pass + "', 256), 256)");
             res->next();
 
@@ -96,7 +107,7 @@ bool dataBase::login(string mail, string pass, int *id, string *name)
         }
         catch (sql::SQLException &e)
         {
-            cout << "# ERR: " << e.what();
+            cout << "# ERR: " << e.what() << endl;
             return 0;
         }
     }
@@ -112,6 +123,8 @@ bool dataBase::regst(string mail, string pass, string name, int *id)
     {
         try
         {
+            checkConnection();
+
             auto res = query("SELECT * FROM user_data WHERE email='" + mail + "'");
             int Existence = 0;
 
@@ -142,7 +155,7 @@ bool dataBase::regst(string mail, string pass, string name, int *id)
         }
         catch (sql::SQLException &e)
         {
-            cout << "# ERR: " << e.what();
+            cout << "# ERR: " << e.what() << endl;
             return 0;
         }
     }
@@ -156,6 +169,8 @@ int dataBase::regstModel(int user_id, string model_name, string model_file_name,
 {
     try
     {
+        checkConnection();
+
         auto res = query("SELECT MAX(model_id) FROM model_data");
         int lastmodelid;
 
@@ -172,7 +187,7 @@ int dataBase::regstModel(int user_id, string model_name, string model_file_name,
     }
     catch (sql::SQLException &e)
     {
-        cout << "# ERR: " << e.what();
+        cout << "# ERR: " << e.what() << endl;
         return -1;
     }
 }
@@ -181,6 +196,8 @@ string dataBase::createAccessKey(int model_id)
 {
     try
     {
+        checkConnection();
+
         string accesskey = createRandomString(10);
         int count = update("INSERT INTO access_key VALUES( null,'" + accesskey + "'" + "," + to_string(model_id) + ", now())");
      
@@ -189,7 +206,7 @@ string dataBase::createAccessKey(int model_id)
     }
     catch (sql::SQLException &e)
     {
-        cout << "# ERR: " << e.what();
+        cout << "# ERR: " << e.what() << endl;
         return "";
     }
 }
@@ -198,6 +215,8 @@ string dataBase::getModelData(int user_id)
 {
     try
     {
+        checkConnection();
+
         auto res = query("SELECT model_id FROM model_data WHERE user_id = " + to_string(user_id));
         std::string str = "";
 
@@ -210,7 +229,7 @@ string dataBase::getModelData(int user_id)
     }
     catch (sql::SQLException &e)
     {
-        cout << "# ERR: " << e.what();
+        cout << "# ERR: " << e.what() << endl;
         return "";
     }
 }
@@ -219,6 +238,8 @@ string dataBase::getModelDataDetail(int model_id)
 {
     try
     {
+        checkConnection();
+
         auto res = query("SELECT * FROM model_data WHERE model_id = " + to_string(model_id));
         std::string str = "";
 
@@ -235,7 +256,32 @@ string dataBase::getModelDataDetail(int model_id)
     }
     catch (sql::SQLException &e)
     {
-        cout << "# ERR: " << e.what();
+        cout << "# ERR: " << e.what() << endl;
         return "";
     }
 }
+
+ bool dataBase::checkBanIP(string IP)
+ {
+      try
+    {
+        checkConnection();
+
+        auto res = query("SELECT * FROM ban_ip WHERE ip='" + IP + "'");
+        res->next();
+
+        if(res->rowsCount() != 0)
+        {
+            return 1;
+        }
+        else 
+        {
+            return 0;
+        }
+    }
+    catch (sql::SQLException &e)
+    {
+        cout << "# ERR: " << e.what() << endl;
+        return "";
+    }
+ }

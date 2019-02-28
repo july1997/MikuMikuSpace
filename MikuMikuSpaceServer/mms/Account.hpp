@@ -10,7 +10,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#pragma comment( lib, "cryptlib.lib" )
+//#pragma comment( lib, "cryptlib.lib" )
 #include <aes.h>
 #include <rsa.h>
 #include <dh.h>
@@ -28,15 +28,18 @@ using namespace std;
 namespace asio = boost::asio;
 namespace ip = asio::ip;
 using boost::asio::ip::udp;
+using asio::ip::tcp;
 
 class Account
 {
     protected:
 
-        asio::io_service *io_service;
-        ip::tcp::socket sock;
-        udp::socket udpsock;
-        ip::address IP;
+        asio::io_service& io_service;
+        tcp::socket sock;
+        //asio::io_service *io_service;
+        //ip::tcp::socket sock;
+        //udp::socket udpsock;
+        //ip::address IP;
 
         std::vector<std::string> message;
         std::vector<std::string> command;
@@ -45,8 +48,8 @@ class Account
         std::thread t;
         int receiveLoop();
 
-        std::thread u;
-        int receiveUDPLoop();
+        //std::thread u;
+        //int receiveUDPLoop();
 
         CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption enc; //aes
         CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption dec;
@@ -55,7 +58,7 @@ class Account
 
         bool sendRSAKey = 0;
     public:
-        Account();
+        Account(asio::io_service& io_service_);
         ~Account();
 
         string name;
@@ -67,11 +70,13 @@ class Account
         int startReceive();
 
         int send(unsigned char Command, string method, string &Buffer);
+        tcp::socket& getSocket();
+        ip::address getIP();
 
         //UDP
-        int startUDPReceive();
+        //int startUDPReceive();
 
-        int sendUDP(unsigned char PlayerID, string &Buffer);
+        //int sendUDP(unsigned char PlayerID, string &Buffer);
 
         //暗号化
         int sendRsaPublicKey();

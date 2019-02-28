@@ -1,7 +1,7 @@
 #include "Account.hpp"
 
 
-Account::Account() : io_service(new asio::io_service()), sock(*io_service), udpsock(*io_service)
+Account::Account(asio::io_service& io_service_) : io_service(io_service_), sock(io_service_)
 {
 }
 
@@ -9,16 +9,22 @@ Account::~Account()
 {
 }
 
+tcp::socket& Account::getSocket()
+{
+    return sock;
+}
+
 int Account::startReceive()
 {
     try
     {
         //IPv4のソケットアドレス情報を設定する
-        u_short port = 13939;
-        ip::tcp::acceptor acceptor(*io_service, ip::tcp::endpoint(ip::tcp::v4(), port));
+        //u_short port = 13939;
+        //ip::tcp::acceptor acceptor(*io_service, ip::tcp::endpoint(ip::tcp::v4(), port));
         //クライアントからの接続を受け入れる
-        acceptor.accept(sock);
-        IP = sock.local_endpoint().address();
+        //acceptor.accept(sock);
+        //IP = sock.local_endpoint().address();
+        
         t = std::thread(&Account::receiveLoop, this);
         t.detach();
     }
@@ -44,6 +50,7 @@ int Account::receiveLoop()
 
             if (error && error != asio::error::eof)
             {
+                cout << "asio::error : " << error << endl;
                 break;
             }
             else if (asio::buffer_cast<const char*>(receive_buffer.data()) == string("end"))
@@ -84,8 +91,9 @@ int Account::receiveLoop()
             }
         }
     }
-    catch (...)
+    catch (exception e)
     {
+        cout << "exception receiveLoop : " << e.what() << endl;
         return -1;
     }
 
@@ -122,8 +130,9 @@ int Account::send(unsigned char Command, string method, string &Buffer)
         //std::cout << encoded << std::endl;
         asio::write(sock, asio::buffer(encoded));
     }
-    catch (...)
+    catch (exception e)
     {
+        cout << "exception send: " << e.what() << endl;
         return -1;
     }
 
@@ -131,7 +140,7 @@ int Account::send(unsigned char Command, string method, string &Buffer)
 }
 
 
-
+/*
 int Account::startUDPReceive()
 {
     try
@@ -171,7 +180,7 @@ int Account::receiveUDPLoop()
             if (len != 0)
             {
                 string decoded;
-                CryptoPP::StringSource ssk(recv_buf.data(), true /*pump all*/,
+                CryptoPP::StringSource ssk(recv_buf.data(), true,
                                            new CryptoPP::Base64Decoder(
                                                new CryptoPP::StringSink(decoded)
                                            ) // HexDecoder
@@ -219,6 +228,7 @@ int Account::sendUDP(unsigned char PlayerID, string &Buffer)
 
     return 0;
 }
+*/
 
 int Account::sendRsaPublicKey()
 {

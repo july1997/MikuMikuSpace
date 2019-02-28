@@ -5,11 +5,18 @@
 
 #include <random>
 #include <boost/thread.hpp>
+#include <ctime>
 
-#include "json11.hpp"
+#include "../../Common/Utility/json11.hpp"
+#include "../../Common/Server.h"
 
 class AccountManager
 {
+        asio::io_service io_service;
+        ip::tcp::acceptor acceptor;
+
+        void on_accept(std::shared_ptr<Account> account_, const boost::system::error_code& error);
+
         std::vector<std::shared_ptr<Account>> accounts;
         std::vector<size_t> miss;
         std::vector<string> old_pos;
@@ -37,6 +44,11 @@ class AccountManager
         bool regst(int account, string str);
         bool pos(int account, string str);
         bool sendlist(int account);
+
+        int readyCount;
+        time_t time;
+
+        bool checkIP(ip::address IP);
 
     public:
         AccountManager();

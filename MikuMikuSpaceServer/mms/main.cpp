@@ -10,13 +10,14 @@ int main()
 {
     cout << MMS_version << endl;
     AccountManager manager;
-    manager.connection();
+    //manager.connection();
     //別スレッドで実行
     std::thread t([&manager]() { manager.connection(); });
 
-    while (1)
-    {
-    }
+    t.join();
+    //while (1)
+    //{
+    //}
 
     return 0;
 }

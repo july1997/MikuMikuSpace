@@ -1,7 +1,8 @@
 #include "AccountManager.hpp"
 
-AccountManager::AccountManager()
+AccountManager::AccountManager() : acceptor(io_service, ip::tcp::endpoint(ip::tcp::v4(), MMS_Server_Port))
 {
+    time = std::time(nullptr);
 }
 
 AccountManager::~AccountManager()
@@ -10,19 +11,50 @@ AccountManager::~AccountManager()
 
 int AccountManager::addAccount()
 {
-    accounts.push_back(std::shared_ptr<Account>(new Account()));
-    miss.push_back(0);
-    old_pos.push_back(startPos);
-    old_dir.push_back("0 0 0");
-    std::vector<unsigned int> l;
-    sendList.push_back(l);
-    logined.push_back(0);
-    dos.push_back(0);
-    help.push_back(0);
-    accounts[accounts.size() - 1]->startReceive();
-    //accounts[accounts.size()-1]->startUDPReceive();
-    accountsNumber++;
+    accounts.push_back(std::shared_ptr<Account>(new Account(io_service)));
+
+    //　接続待機（非同期）
+    acceptor.async_accept(
+            accounts[accounts.size() - 1]->getSocket(),
+            boost::bind(&AccountManager::on_accept, this, accounts[accounts.size() - 1], asio::placeholders::error));
+
     return 0;
+}
+
+void AccountManager::on_accept(std::shared_ptr<Account> account_, const boost::system::error_code& error)
+{
+    // 接続されたらここに来る
+    if (error) {
+        std::cout << "accept failed: " << error.message() << std::endl;
+    }
+
+    // IPチェック
+    if(checkIP(account_->getSocket().local_endpoint().address()))
+    {
+        miss.push_back(0);
+        old_pos.push_back(startPos);
+        old_dir.push_back("0 0 0");
+        std::vector<unsigned int> l;
+        sendList.push_back(l);
+        logined.push_back(0);
+        dos.push_back(0);
+        help.push_back(0);
+
+        // 受信開始
+        account_->startReceive();
+        accountsNumber++;
+    }
+    else 
+    {
+        std::cout << "ban ip: " << account_->getSocket().local_endpoint().address() << std::endl;
+    }
+
+    addAccount();
+}
+
+bool AccountManager::checkIP(ip::address IP)
+{
+    return !data.checkBanIP(IP.to_string());
 }
 
 int AccountManager::deleteAccount(size_t l)
@@ -531,6 +563,41 @@ void AccountManager::update()
                                 accounts[l]->encryptByAes(contens);
                                 accounts[l]->send(3, "ACCESS", contens);
                             }
+                            else if (mess == "MOV ")
+                            {
+                                string type = dmess.substr(0, dmess.find(" "));
+					            dmess.erase(0, type.length() + 1);
+             
+                                if(type == "REQUEST")
+                                {
+                                    // 60秒以上経過
+                                    if(std::time(nullptr) - time >= 60)
+                                    {
+                                        time = std::time(nullptr);
+                                        readyCount = 0;
+                                        
+                                        for (int i = 0; i < accountsNumber; i++)
+                                        {
+                                            string sp("DL " + dmess);
+                                            accounts[i]->encryptByAes(sp);
+                                            accounts[i]->send(3, "MOV", sp);
+                                        }
+                                    }
+                                }
+                                else if(type == "READY")
+                                {
+                                    readyCount++;
+                                    if(readyCount == accountsNumber)
+                                    {
+                                        for (int i = 0; i < accountsNumber; i++)
+                                        {
+                                            string sp("PLAY ");
+                                            accounts[i]->encryptByAes(sp);
+                                            accounts[i]->send(3, "MOV", sp);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -581,7 +648,12 @@ int AccountManager::connection()
         {
             t = std::thread(&AccountManager::update, this);
             t.detach();
+
+            io_service.run();
+            
             startup = 1;
         }
     }
+
+    return 0;
 }
