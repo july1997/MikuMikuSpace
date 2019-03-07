@@ -41,9 +41,8 @@ class Account
         //udp::socket udpsock;
         //ip::address IP;
 
-        std::vector<std::string> message;
-        std::vector<std::string> command;
-        std::vector<std::string> bigmessage;
+        std::shared_ptr<std::vector<std::string>> message;
+        //std::vector<std::string> command;
 
         std::thread t;
         int receiveLoop();
@@ -51,20 +50,23 @@ class Account
         //std::thread u;
         //int receiveUDPLoop();
 
-        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption enc; //aes
-        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption dec;
-        CryptoPP::RSA::PrivateKey privateKey;
-        CryptoPP::RSA::PublicKey publicKey;
+        std::shared_ptr<CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption> enc; //aes
+        std::shared_ptr<CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption> dec;
+        std::shared_ptr<CryptoPP::RSA::PrivateKey> privateKey;
+        std::shared_ptr<CryptoPP::RSA::PublicKey> publicKey;
 
         bool sendRSAKey = 0;
+        std::shared_ptr<bool>end;
     public:
         Account(asio::io_service& io_service_);
         ~Account();
 
         string name;
         string modelname;
-        unsigned int myID;
-        bool end = 0;
+        unsigned int myID = 0;
+
+        bool isEnd();
+        void setEnd(bool End);
 
         //TCP
         int startReceive();
@@ -94,8 +96,8 @@ class Account
         size_t getMessageSize();
         std::string getMessage();
 
-        size_t getCommandSize();
-        std::string getCommand();
+        //size_t getCommandSize();
+        //std::string getCommand();
 
         //変換
         std::string convertBufferToString(boost::asio::streambuf& buffer);

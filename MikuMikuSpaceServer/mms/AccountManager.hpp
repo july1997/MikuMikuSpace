@@ -7,7 +7,7 @@
 #include <boost/thread.hpp>
 #include <ctime>
 
-#include "../../Common/Utility/json11.hpp"
+#include "json11.hpp"
 #include "../../Common/Server.h"
 
 class AccountManager
@@ -32,6 +32,7 @@ class AccountManager
 
         dataBase data;
 
+        std::thread t;
         bool startup = 0;
 
         int addAccount();
@@ -57,4 +58,6 @@ class AccountManager
         int connection();
 
         void update();
+        
+        int getAccountsSize();
 };

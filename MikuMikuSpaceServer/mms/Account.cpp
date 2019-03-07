@@ -3,6 +3,8 @@
 
 Account::Account(asio::io_service& io_service_) : io_service(io_service_), sock(io_service_)
 {
+    end = std::make_shared<bool>(0);
+    message = std::make_shared<std::vector<std::string>>();
 }
 
 Account::~Account()
@@ -36,8 +38,21 @@ int Account::startReceive()
     return 0;
 }
 
+bool Account::isEnd()
+{
+    return *end;
+}
+
+void Account::setEnd(bool End)
+{
+    *end = End;
+}
+
+
 int Account::receiveLoop()
 {
+    std::vector<std::string> bigmessage;
+            
     //別スレッドで立ち上げ
     try
     {
@@ -48,10 +63,15 @@ int Account::receiveLoop()
             boost::system::error_code error;
             asio::read(sock, receive_buffer, asio::transfer_at_least(1), error);
 
-            if (error && error != asio::error::eof)
+            if(isEnd())
+            {
+                break;
+            }
+            else if (error && error != asio::error::eof)
             {
                 cout << "asio::error : " << error << endl;
-                break;
+                message->push_back("end");
+                return -1;
             }
             else if (asio::buffer_cast<const char*>(receive_buffer.data()) == string("end"))
             {
@@ -87,7 +107,8 @@ int Account::receiveLoop()
                                                new CryptoPP::StringSink(decoded)
                                            ) // HexDecoder
                                           ); // StringSource
-                message.push_back(decoded);
+                message->push_back(decoded);
+
             }
         }
     }
@@ -97,9 +118,9 @@ int Account::receiveLoop()
         return -1;
     }
 
-    if (!end)
+    //if (!isEnd())
     {
-        message.push_back("end");
+        message->push_back("end");
         cout << "Logout : id " << myID << "  name " << name << endl;
     }
 
@@ -238,13 +259,13 @@ int Account::sendRsaPublicKey()
         CryptoPP::InvertibleRSAFunction params;
         //RSAキーの生成
         params.GenerateRandomWithKeySize(rng, 3072);
-        privateKey = CryptoPP::RSA::PrivateKey(params);
-        publicKey = CryptoPP::RSA::PublicKey(params);
+        privateKey = std::make_shared<CryptoPP::RSA::PrivateKey>(params);
+        publicKey =  std::make_shared<CryptoPP::RSA::PublicKey>(params);
         // Temporaries
         string spki;
         CryptoPP::StringSink ss(spki);
         // Use Save to DER encode the Subject Public Key Info (SPKI)
-        publicKey.Save(ss);
+        publicKey->Save(ss);
         //cout << spki.size() <<endl;
         //cout << spki << " : " << dmess<<endl;
         //rsa publicキーを送る
@@ -265,7 +286,7 @@ void Account::signature()
     {
         CryptoPP::AutoSeededRandomPool rng;
         string signature;
-        CryptoPP::RSASS<CryptoPP::PSS, CryptoPP::SHA1>::Signer signer(privateKey);
+        CryptoPP::RSASS<CryptoPP::PSS, CryptoPP::SHA1>::Signer signer(*privateKey);
         CryptoPP::StringSource ss1(MMS_version, true,
                                    new CryptoPP::SignerFilter(rng, signer,
                                            new CryptoPP::StringSink(signature)
@@ -286,7 +307,7 @@ std::string Account::encryptByRsa(std::string &str)
         CryptoPP::AutoSeededRandomPool rnd;
         std::string cipher;
         // Encryption
-        CryptoPP::RSAES_OAEP_SHA_Encryptor e(publicKey);
+        CryptoPP::RSAES_OAEP_SHA_Encryptor e(*publicKey);
         CryptoPP::StringSource ss1(str, true,
                                    new CryptoPP::PK_EncryptorFilter(rnd, e,
                                            new CryptoPP::StringSink(cipher)
@@ -306,7 +327,7 @@ std::string Account::decryptionByRsa(std::string &str)
     {
         std::string recovered;
         // Decryption
-        CryptoPP::RSAES_OAEP_SHA_Decryptor d(privateKey);
+        CryptoPP::RSAES_OAEP_SHA_Decryptor d(*privateKey);
         CryptoPP::AutoSeededRandomPool rndg;
         CryptoPP::StringSource ss2(str, true,
                                    new CryptoPP::PK_DecryptorFilter(rndg, d,
@@ -327,6 +348,9 @@ int Account::makeAESKey(std::string &Key_s, std::string &iv_s)
     {
         if (Key_s.size() == 16 && iv_s.size() == 16)
         {
+            enc = std::make_shared<CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption>();
+            dec = std::make_shared<CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption>();
+
             byte key[CryptoPP::AES::DEFAULT_KEYLENGTH];
             byte iv[CryptoPP::AES::BLOCKSIZE];
 
@@ -345,8 +369,8 @@ int Account::makeAESKey(std::string &Key_s, std::string &iv_s)
                 iv[i] = iv_s[i];
             }
 
-            enc.SetKeyWithIV(key, sizeof(key), iv);
-            dec.SetKeyWithIV(key, sizeof(key), iv);
+            enc->SetKeyWithIV(key, sizeof(key), iv);
+            dec->SetKeyWithIV(key, sizeof(key), iv);
         }
         else
         {
@@ -366,7 +390,7 @@ void Account::encryptByAes(std::string &str)
     try
     {
         //in string	と out string　に指定するのは同じstirngでないとダメ
-        enc.ProcessData((byte*)str.data(), (byte*)str.data(), str.size());
+        enc->ProcessData((byte*)str.data(), (byte*)str.data(), str.size());
     }
     catch (...)
     {
@@ -378,7 +402,7 @@ void Account::decryptionByAes(std::string &str)
     try
     {
         //in string	と out string　に指定するのは同じstirngでないとダメ
-        dec.ProcessData((byte*)str.data(), (byte*)str.data(), str.size());
+        dec->ProcessData((byte*)str.data(), (byte*)str.data(), str.size());
     }
     catch (...)
     {
@@ -387,17 +411,17 @@ void Account::decryptionByAes(std::string &str)
 
 size_t Account::getMessageSize()
 {
-    return message.size();
+    return message->size();
 }
 
 std::string Account::getMessage()
 {
     try
     {
-        if (!end)
+        if (!isEnd())
         {
-            string m = message[0];
-            message.erase(message.begin());
+            string m = message->at(0);
+            message->erase(message->begin());
             return m;
         }
         else
@@ -410,7 +434,7 @@ std::string Account::getMessage()
         return "";
     }
 }
-
+/*
 size_t Account::getCommandSize()
 {
     return command.size();
@@ -429,3 +453,4 @@ std::string Account::getCommand()
         return "";
     }
 }
+*/

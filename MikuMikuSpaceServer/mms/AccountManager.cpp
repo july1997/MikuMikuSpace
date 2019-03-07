@@ -23,6 +23,14 @@ int AccountManager::addAccount()
 
 void AccountManager::on_accept(std::shared_ptr<Account> account_, const boost::system::error_code& error)
 {
+    if(!startup)
+    {
+        t = std::thread(&AccountManager::update, this);
+        t.detach();
+        
+        startup = 1;
+    }
+    
     // 接続されたらここに来る
     if (error) {
         std::cout << "accept failed: " << error.message() << std::endl;
@@ -47,6 +55,9 @@ void AccountManager::on_accept(std::shared_ptr<Account> account_, const boost::s
     else 
     {
         std::cout << "ban ip: " << account_->getSocket().local_endpoint().address() << std::endl;
+
+        account_->getSocket().close();
+        accounts.erase(accounts.end());
     }
 
     addAccount();
@@ -412,9 +423,13 @@ void AccountManager::update()
                 string str = accounts[l]->getMessage();
                 dos[l] += str.size();
 
-                if (dos[l] > 1000) { accounts[l]->end = 1; }
+                if (dos[l] > 3000) 
+                {
+                    cout << "dos attack" << endl;
+                    accounts[l]->setEnd(1);
+                }
 
-                if (str != string("end") && !accounts[l]->end)
+                if (str != string("end"))
                 {
                     string id = std::to_string((unsigned char)str[0]);
 
@@ -449,7 +464,7 @@ void AccountManager::update()
                                 accounts[l]->send(1, "KEY", s);
                                 cout << key.size() << " : " << dmess.size() << endl;
                                 cout << key << " : " << dmess << endl;
-                                accounts[l]->end = 1;
+                                accounts[l]->setEnd(1);
                             }
                         }
                     }
@@ -468,14 +483,14 @@ void AccountManager::update()
                             {
                                 if (!login(l, dmess))
                                 {
-                                    accounts[l]->end = 1;
+                                    accounts[l]->setEnd(1);
                                 }
                             }
                             else if (mess == "REGST ")
                             {
                                 if (!regst(l, dmess))
                                 {
-                                    accounts[l]->end = 1;
+                                    accounts[l]->setEnd(1);
                                 }
                             }
                             else if (mess == "POS ")
@@ -600,16 +615,10 @@ void AccountManager::update()
                             }
                         }
                     }
-                }
-                else
-                {
-                    accounts[l]->end = 1;
-                }
-
-                if (accounts[l]->end)
+                } 
+                else 
                 {
                     if (logined[l] == 1) { loginnun--; }
-
                     accountsNumber--;
                     deleteAccount(l);
                     break;
@@ -636,24 +645,15 @@ void AccountManager::update()
 
 
 int AccountManager::connection()
-{
-    bool startup = 0;
-    std::thread t;
-
-    while (1)
-    {
-        addAccount();
-
-        if (!startup)
-        {
-            t = std::thread(&AccountManager::update, this);
-            t.detach();
-
-            io_service.run();
-            
-            startup = 1;
-        }
-    }
+{ 
+    addAccount();
+    
+    io_service.run();
 
     return 0;
 }
+
+ int AccountManager::getAccountsSize()
+ {
+     return accounts.size();
+ }
