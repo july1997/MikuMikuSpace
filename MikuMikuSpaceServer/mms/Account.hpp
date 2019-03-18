@@ -9,6 +9,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
+#include <boost/bind.hpp>
 
 //#pragma comment( lib, "cryptlib.lib" )
 #include <aes.h>
@@ -44,8 +45,13 @@ class Account
         std::shared_ptr<std::vector<std::string>> message;
         //std::vector<std::string> command;
 
-        std::thread t;
-        int receiveLoop();
+        //std::thread t;
+        //int receiveLoop();
+        void start_receive();
+        void on_receive(const boost::system::error_code& error);
+        asio::streambuf receive_buffer;
+        std::vector<std::string> bigmessage;
+        bool end = 0;
 
         //std::thread u;
         //int receiveUDPLoop();
@@ -56,7 +62,6 @@ class Account
         std::shared_ptr<CryptoPP::RSA::PublicKey> publicKey;
 
         bool sendRSAKey = 0;
-        std::shared_ptr<bool>end;
     public:
         Account(asio::io_service& io_service_);
         ~Account();
@@ -65,7 +70,7 @@ class Account
         string modelname;
         unsigned int myID = 0;
 
-        bool isEnd();
+        //bool isEnd();
         void setEnd(bool End);
 
         //TCP

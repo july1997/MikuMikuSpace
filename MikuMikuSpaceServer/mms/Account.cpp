@@ -3,7 +3,6 @@
 
 Account::Account(asio::io_service& io_service_) : io_service(io_service_), sock(io_service_)
 {
-    end = std::make_shared<bool>(0);
     message = std::make_shared<std::vector<std::string>>();
 }
 
@@ -27,8 +26,11 @@ int Account::startReceive()
         //acceptor.accept(sock);
         //IP = sock.local_endpoint().address();
         
-        t = std::thread(&Account::receiveLoop, this);
-        t.detach();
+        //t = std::thread(&Account::receiveLoop, this);
+        //t.detach();
+
+        // 受信開始
+        start_receive();
     }
     catch (...)
     {
@@ -38,99 +40,82 @@ int Account::startReceive()
     return 0;
 }
 
-bool Account::isEnd()
-{
-    return *end;
-}
-
 void Account::setEnd(bool End)
 {
-    *end = End;
+    end = End;
 }
 
-
-int Account::receiveLoop()
+void Account::start_receive()
 {
-    std::vector<std::string> bigmessage;
-            
-    //別スレッドで立ち上げ
+    asio::async_read(
+        sock,
+        receive_buffer,
+        asio::transfer_at_least(1), 
+        boost::bind(&Account::on_receive, this, asio::placeholders::error));
+}
+
+void Account::on_receive(const boost::system::error_code& error)
+{
     try
     {
-        //メッセージを送受信
-        while (true)
+         if ((boost::asio::error::eof == error) || (boost::asio::error::connection_reset == error) || end)
         {
-            asio::streambuf receive_buffer;
-            boost::system::error_code error;
-            asio::read(sock, receive_buffer, asio::transfer_at_least(1), error);
-
-            if(isEnd())
-            {
-                break;
-            }
-            else if (error && error != asio::error::eof)
-            {
-                cout << "asio::error : " << error << endl;
-                message->push_back("end");
-                return -1;
-            }
-            else if (asio::buffer_cast<const char*>(receive_buffer.data()) == string("end"))
-            {
-                break;
-            }
-
-            //文字列へ変換
-            std::string restr = convertBufferToString(receive_buffer);
-
-            if (restr == "") { break; }
-
-            //std::cout << restr << std::endl;
-
-            //dxライブラリは512byte送ると勝手に分割するので注意
-            if (restr.size() >= 512)
-            {
-                restr.erase(restr.begin() + 512, restr.end());
-                bigmessage.push_back(restr);
-                //std::cout << "recived big : " << restr.size() << " " << restr << std::endl;
-            }
-            else
-            {
-                if (bigmessage.size() > 0)
-                {
-                    restr = bigmessage[0] + restr;
-                    bigmessage.erase(bigmessage.begin());
-                    //std::cout << "attached : " << restr << std::endl;
-                }
-
-                string decoded;
-                CryptoPP::StringSource ssk(restr, true /*pump all*/,
-                                           new CryptoPP::Base64Decoder(
-                                               new CryptoPP::StringSink(decoded)
-                                           ) // HexDecoder
-                                          ); // StringSource
-                message->push_back(decoded);
-
-            }
+            message->push_back("end");
+            cout << "Logout : id " << myID << "  name " << name << endl;
+            return;
         }
+                
+        //文字列へ変換
+        std::string restr = convertBufferToString(receive_buffer);
+
+        if (restr == "") 
+        {
+            message->push_back("end");
+            return;
+        }
+
+        //std::cout << restr << std::endl;
+
+        //dxライブラリは512byte送ると勝手に分割するので注意
+        if (restr.size() >= 512)
+        {
+            restr.erase(restr.begin() + 512, restr.end());
+            bigmessage.push_back(restr);
+            //std::cout << "recived big : " << restr.size() << " " << restr << std::endl;
+        }
+        else
+        {
+            if (bigmessage.size() > 0)
+            {
+                restr = bigmessage[0] + restr;
+                bigmessage.erase(bigmessage.begin());
+                //std::cout << "attached : " << restr << std::endl;
+            }
+
+            string decoded;
+            CryptoPP::StringSource ssk(restr, true /*pump all*/,
+                                        new CryptoPP::Base64Decoder(
+                                            new CryptoPP::StringSink(decoded)
+                                        ) // HexDecoder
+                                        ); // StringSource
+            message->push_back(decoded);
+        }
+
+        start_receive();
     }
     catch (exception e)
     {
         cout << "exception receiveLoop : " << e.what() << endl;
-        return -1;
-    }
-
-    //if (!isEnd())
-    {
+        sock.cancel();
         message->push_back("end");
-        cout << "Logout : id " << myID << "  name " << name << endl;
+        return;
     }
-
-    return 0;
 }
-
 
 std::string Account::convertBufferToString(boost::asio::streambuf& buffer)
 {
     std::string result = boost::asio::buffer_cast<const char*>(buffer.data());
+    buffer.consume(buffer.size());
     return result;
 }
 
@@ -418,7 +403,7 @@ std::string Account::getMessage()
 {
     try
     {
-        if (!isEnd())
+        if (message->size() > 0)
         {
             string m = message->at(0);
             message->erase(message->begin());

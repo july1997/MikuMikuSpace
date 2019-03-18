@@ -427,6 +427,7 @@ void AccountManager::update()
                 {
                     cout << "dos attack" << endl;
                     accounts[l]->setEnd(1);
+                    dos[l] = 0;
                 }
 
                 if (str != string("end"))
