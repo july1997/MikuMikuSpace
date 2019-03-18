@@ -35,7 +35,7 @@ int Character::getModelID()
 void Character::draw()
 {
     // 物理演算を６０分の１秒経過したという想定で実行
-    //MV1PhysicsCalculation(modelhandle, 1000.0f);
+    //f(modelhandle, 1000.0f);
     MV1DrawModel(modelhandle);
 }
 
@@ -416,6 +416,7 @@ void Character::animeControl()
             time = timer2;
             timer2 = 0;
             timer3 = 0;
+			MV1PhysicsResetState(modelhandle);
         }
 
         timer2 += passagetime;
@@ -486,6 +487,7 @@ void Character::animeControl()
             state = "stand";
             time = timer2;
             timer2 = 0;
+			MV1PhysicsResetState(modelhandle);
         }
 
         timer2 += passagetime;
@@ -575,6 +577,7 @@ void Character::animeControl()
             time = timer2;
             timer2 = 0;
             timer3 = 0;
+			MV1PhysicsResetState(modelhandle);
         }
 
         timer2 += passagetime;
@@ -628,18 +631,30 @@ void Character::debug()
 
 void Character::update()
 {
+	VECTOR bpos;
+
     if (!dance)
     {
-        setPos(bullet->getCharacterPos(caharacter, sub));
+        //setPos(bullet->getCharacterPos(caharacter, sub));
+		bpos = bullet->getCharacterPos(caharacter, sub);
     }
     else
     {
-        setPos(bullet->getCharacterPos(caharacter, VGet(0, 9.3f, 0)));
+        //setPos(bullet->getCharacterPos(caharacter, VGet(0, 9.3f, 0)));
+		bpos = bullet->getCharacterPos(caharacter, VGet(0, 9.3f, 0));
     }
 
     setRot(bullet->VGetRot(bullet->getCharacterRot(caharacter)));
     int ptime = nowtime - oldtime;
-    MV1PhysicsCalculation(modelhandle, (float)ptime);
+
+	int DivNum = 3;
+	for (int i = 0; i < DivNum; i++)
+	{
+		setPos(VAdd(getPos(),VScale(VSub(bpos, getPos()),1.0f/(float)DivNum)));
+		MV1PhysicsCalculation(modelhandle, 1000.0f / 60.0f / DivNum);
+	}
+
+    //MV1PhysicsCalculation(modelhandle,1000.0f / 60.0f);
 
     if (!fadein)
     {

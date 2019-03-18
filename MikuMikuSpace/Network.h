@@ -3,6 +3,7 @@
 #include "DxLib.h"
 #include "../Common/fps.h"
 #include "../Common/Version.h"
+#include "../Common/Server.h"
 
 #pragma comment( lib, "cryptlib.lib" )
 #include <aes.h>

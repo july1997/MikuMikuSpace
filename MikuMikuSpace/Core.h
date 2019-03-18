@@ -6,6 +6,7 @@
 #include "sexyhook.h"
 
 #include "../Common/Logger.h"
+#include "../Common/Version.h"
 
 class Core
 {

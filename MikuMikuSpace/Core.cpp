@@ -67,7 +67,7 @@ size_t Core::setup()
     //画面モード
     SetGraphMode(1280, 720, 32);
     ChangeWindowMode(1);
-    SetMainWindowText("MikuMikuOpenWorld");//ウィンドウモード
+    SetMainWindowText(MMS_version);//ウィンドウモード
     //　ウインドウモードの時にウインドウのサイズを自由に変更出来るように設定する
     SetWindowSizeChangeEnableFlag(TRUE);
     SetMultiThreadFlag(TRUE);// マルチスレッドに適したモードで起動する

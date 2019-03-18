@@ -90,7 +90,7 @@ int ModelManager::getModel(int mode_id)
         //mv1à»äOÇ≈ïœçX
         MV1SetLoadModelAnimFilePath("System/Motion/");
 
-		//MV1SetLoadModelUsePhysicsMode(DX_LOADMODEL_PHYSICS_REALTIME);
+		MV1SetLoadModelUsePhysicsMode(DX_LOADMODEL_PHYSICS_REALTIME);
     }
 
 	string filepath = json["model_file_pash"].string_value() + u8"/" + json["model_file_name"].string_value();

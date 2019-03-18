@@ -471,7 +471,7 @@ void NetworkManager::sendLoop()
     //別スレッドで立ち上げ 60fps
     while (!ProcessMessage())
     {
-        if (counter % 30 == 0)
+        if (counter % 15 == 0)
         {
             //direction
             VECTOR d = cahara->gertDirection();
@@ -489,7 +489,7 @@ void NetworkManager::sendLoop()
             }
             else
             {
-                if (!sendDir)
+                if (sendDir != 2)
                 {
                     string dir1 = to_string(d.x);
                     string dir2 = to_string(d.y);
@@ -497,7 +497,7 @@ void NetworkManager::sendLoop()
                     string sts = to_string(ts);
                     string s = (dir1.substr(0, dir1.size() - 3) + " " + dir2.substr(0, dir2.size() - 3) + " " + die3.substr(0, die3.size() - 3) + " " + sts.substr(0, sts.size() - 1));
                     network.send(3, "DIR", s, 0, 1, 0, 1);
-                    sendDir = 1;
+                    sendDir++;
                 }
             }
         }
@@ -511,7 +511,7 @@ void NetworkManager::sendLoop()
             network.send(3, "STATE", state, 0, 1, 0, 1);
         }
 
-        if (counter >= 300)
+        if (counter >= 150)
         {
             //position
             string posi1 = to_string((int)cahara->getPosBullet().x);
